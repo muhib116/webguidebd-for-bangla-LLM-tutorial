@@ -58,8 +58,8 @@ if ( $public ) {
 		'title'  => (string) $chapter['title'],
 		'lead'   => (string) $chapter['summary'],
 		'crumbs' => array(
-			array( 'label' => 'AI Academy', 'url' => \WGBA\Rewrite::url( 'home' ) ),
-			array( 'label' => 'Tutorials', 'url' => \WGBA\Rewrite::url( 'roadmap' ) ),
+			array( 'label' => 'হোম', 'url' => \WGBA\Rewrite::url( 'home' ) ),
+			array( 'label' => 'রোডম্যাপ', 'url' => \WGBA\Rewrite::url( 'roadmap' ) ),
 			array( 'label' => (string) $chapter['title'] ),
 		),
 	)

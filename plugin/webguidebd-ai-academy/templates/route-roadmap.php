@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 ?>
 <section class="wgba-wrap wgba-section">
 	<div class="wgba-section-head">
-		<h2>সব Tutorials</h2>
+		<h2>সব অধ্যায়</h2>
 		<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'home' ) ); ?>">হোমে ফিরুন »</a>
 	</div>
 	<div class="wgba-roadmap-list">

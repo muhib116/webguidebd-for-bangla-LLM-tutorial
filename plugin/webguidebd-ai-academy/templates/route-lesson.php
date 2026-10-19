@@ -53,7 +53,7 @@ if ( $can_full && is_user_logged_in() ) {
 ?>
 <div class="wgba-lesson-shell">
 	<aside class="wgba-sidebar" aria-label="পাঠ্যক্রম">
-		<button type="button" class="wgba-sidebar-toggle" data-wgba-sidebar-toggle>Menu</button>
+		<button type="button" class="wgba-sidebar-toggle" data-wgba-sidebar-toggle>পাঠ তালিকা</button>
 		<div class="wgba-sidebar-panel">
 			<p class="wgba-sidebar-title">TUTORIAL</p>
 			<?php foreach ( \WGBA\Content_Repository::list_chapters( true ) as $ch ) : ?>
@@ -73,12 +73,12 @@ if ( $can_full && is_user_logged_in() ) {
 	<article class="wgba-article">
 		<nav class="wgba-pager" aria-label="পাঠ নেভিগেশন">
 			<?php if ( $prev ) : ?>
-				<a class="wgba-btn wgba-btn-prev" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', (string) $prev['slug'] ) ); ?>">❮ Previous</a>
+				<a class="wgba-btn wgba-btn-prev" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', (string) $prev['slug'] ) ); ?>">❮ আগের পাঠ</a>
 			<?php else : ?>
 				<span></span>
 			<?php endif; ?>
 			<?php if ( $next ) : ?>
-				<a class="wgba-btn" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', (string) $next['slug'] ) ); ?>">Next ❯</a>
+				<a class="wgba-btn" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', (string) $next['slug'] ) ); ?>">পরের পাঠ ❯</a>
 			<?php endif; ?>
 		</nav>
 
@@ -195,12 +195,12 @@ if ( $can_full && is_user_logged_in() ) {
 
 		<nav class="wgba-pager" aria-label="পাঠ নেভিগেশন নিচ">
 			<?php if ( $prev ) : ?>
-				<a class="wgba-btn wgba-btn-prev" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', (string) $prev['slug'] ) ); ?>">❮ Previous</a>
+				<a class="wgba-btn wgba-btn-prev" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', (string) $prev['slug'] ) ); ?>">❮ আগের পাঠ</a>
 			<?php else : ?>
 				<span></span>
 			<?php endif; ?>
 			<?php if ( $next ) : ?>
-				<a class="wgba-btn" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', (string) $next['slug'] ) ); ?>">Next ❯</a>
+				<a class="wgba-btn" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', (string) $next['slug'] ) ); ?>">পরের পাঠ ❯</a>
 			<?php endif; ?>
 		</nav>
 	</article>

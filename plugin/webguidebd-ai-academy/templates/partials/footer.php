@@ -6,9 +6,10 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-$p     = \WGBA\Site_Profile::get();
-$name  = (string) $p['author_display_name'];
-$photo = \WGBA\Site_Profile::photo_url();
+$p         = \WGBA\Site_Profile::get();
+$name      = (string) $p['author_display_name'];
+$photo     = \WGBA\Site_Profile::photo_url();
+$logged_in = is_user_logged_in();
 ?>
 </main>
 <footer class="wgba-footer">
@@ -21,7 +22,7 @@ $photo = \WGBA\Site_Profile::photo_url();
 						class="wgba-brand-logo wgba-brand-logo-light"
 						src="<?php echo esc_url( \WGBA\Site_Profile::logo_url( 'light' ) ); ?>"
 						width="160"
-						height="55"
+						height="40"
 						alt="Web Guide BD"
 						decoding="async"
 					>
@@ -29,7 +30,7 @@ $photo = \WGBA\Site_Profile::photo_url();
 						class="wgba-brand-logo wgba-brand-logo-dark"
 						src="<?php echo esc_url( \WGBA\Site_Profile::logo_url( 'dark' ) ); ?>"
 						width="160"
-						height="55"
+						height="40"
 						alt=""
 						decoding="async"
 						aria-hidden="true"
@@ -48,17 +49,21 @@ $photo = \WGBA\Site_Profile::photo_url();
 				<p class="wgba-footer-heading">শেখা</p>
 				<ul class="wgba-footer-list">
 					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'home' ) ); ?>">হোম</a></li>
-					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">Tutorials / রোডম্যাপ</a></li>
+					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">রোডম্যাপ</a></li>
 					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'glossary' ) ); ?>">শব্দকোষ</a></li>
 					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'projects' ) ); ?>">প্রজেক্ট গ্যালারি</a></li>
-					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'login' ) ); ?>">লগইন</a></li>
+					<?php if ( $logged_in ) : ?>
+						<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'dashboard' ) ); ?>">ড্যাশবোর্ড</a></li>
+					<?php else : ?>
+						<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'login' ) ); ?>">লগইন</a></li>
+					<?php endif; ?>
 				</ul>
 			</div>
 			<div>
 				<p class="wgba-footer-heading">প্রতিষ্ঠান</p>
 				<ul class="wgba-footer-list">
-					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'author' ) ); ?>">About Us</a></li>
-					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'contact' ) ); ?>">Contact Us</a></li>
+					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'author' ) ); ?>">আমাদের সম্পর্কে</a></li>
+					<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'contact' ) ); ?>">যোগাযোগ</a></li>
 					<li><a href="<?php echo esc_url( (string) $p['author_youtube'] ); ?>" rel="noopener">YouTube</a></li>
 					<li><a href="<?php echo esc_url( (string) $p['author_linkedin'] ); ?>" rel="noopener">LinkedIn</a></li>
 					<li><a href="<?php echo esc_url( (string) $p['author_facebook'] ); ?>" rel="noopener">Facebook</a></li>
@@ -78,9 +83,9 @@ $photo = \WGBA\Site_Profile::photo_url();
 		<div class="wgba-footer-copy">
 			<span>© <?php echo esc_html( gmdate( 'Y' ) ); ?> Web Guide BD · <?php echo esc_html( $name ); ?></span>
 			<span class="wgba-footer-copy-links">
-				<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'author' ) ); ?>">About</a>
-				<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'contact' ) ); ?>">Contact</a>
-				<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'privacy' ) ); ?>">Privacy</a>
+				<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'author' ) ); ?>">আমাদের সম্পর্কে</a>
+				<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'contact' ) ); ?>">যোগাযোগ</a>
+				<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'privacy' ) ); ?>">গোপনীয়তা</a>
 			</span>
 		</div>
 	</div>

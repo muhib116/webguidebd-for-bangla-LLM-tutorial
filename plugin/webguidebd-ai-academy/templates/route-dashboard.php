@@ -43,7 +43,7 @@ $pct         = (float) $stats['reading_percent'];
 				<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'notes' ) ); ?>">নোট</a></li>
 				<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'bookmarks' ) ); ?>">বুকমার্ক</a></li>
 				<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'questions' ) ); ?>">আমার প্রশ্ন</a></li>
-				<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">Tutorials</a></li>
+				<li><a href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">রোডম্যাপ</a></li>
 				<li><a href="<?php echo esc_url( rest_url( 'wgba/v1/me/export' ) ); ?>">ডেটা এক্সপোর্ট</a></li>
 			</ul>
 		</section>

@@ -18,7 +18,7 @@ $projects = array(
 		'title'  => 'প্রজেক্ট গ্যালারি',
 		'lead'   => 'পাবলিক প্রজেক্ট বিনা লগইনে; বাকিগুলো বিনামূল্যে—লগইন করে পূর্ণ নির্দেশনা পড়ুন।',
 		'crumbs' => array(
-			array( 'label' => 'AI Academy', 'url' => \WGBA\Rewrite::url( 'home' ) ),
+			array( 'label' => 'হোম', 'url' => \WGBA\Rewrite::url( 'home' ) ),
 			array( 'label' => 'প্রজেক্ট' ),
 		),
 	)
@@ -26,15 +26,15 @@ $projects = array(
 ?>
 <section class="wgba-wrap wgba-section">
 	<div class="wgba-section-head">
-		<h2>Projects</h2>
-		<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">Tutorials »</a>
+		<h2>প্রজেক্ট</h2>
+		<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">রোডম্যাপ »</a>
 	</div>
 	<ul class="wgba-tut-list">
 		<?php foreach ( $projects as $p ) : ?>
 			<?php
 			$logged  = is_user_logged_in();
 			$badge_c = $p['public'] || $logged ? 'is-public' : 'is-login';
-			$badge_t = $p['public'] ? 'Public' : ( $logged ? 'Unlocked' : 'Login' );
+			$badge_t = $p['public'] ? 'পাবলিক' : ( $logged ? 'খোলা' : 'লগইন দরকার' );
 			?>
 			<li>
 				<a class="wgba-tut-item" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', $p['slug'] ) ); ?>">

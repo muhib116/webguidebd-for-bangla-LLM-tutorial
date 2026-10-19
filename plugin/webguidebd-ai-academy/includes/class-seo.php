@@ -29,9 +29,23 @@ final class SEO {
 	public static function register(): void {
 		add_action( 'wp_head', array( self::class, 'head_tags' ), 1 );
 		add_filter( 'pre_get_document_title', array( self::class, 'document_title' ), 20 );
+		add_filter( 'language_attributes', array( self::class, 'language_attributes' ), 20 );
 		add_action( 'template_redirect', array( self::class, 'maybe_indexing_endpoints' ), 0 );
 		add_filter( 'robots_txt', array( self::class, 'filter_robots_txt' ), 20, 2 );
 		add_action( 'init', array( self::class, 'register_wp_sitemap_provider' ), 30 );
+	}
+
+	/**
+	 * Force a single lang="bn" on Academy routes (avoid en-US + bn duplicate).
+	 *
+	 * @param string $output Language attributes.
+	 */
+	public static function language_attributes( string $output ): string {
+		if ( ! get_query_var( 'wgba_route' ) ) {
+			return $output;
+		}
+		$dir = ( false !== stripos( $output, 'dir="rtl"' ) ) ? 'rtl' : 'ltr';
+		return 'lang="bn" dir="' . esc_attr( $dir ) . '"';
 	}
 
 	/**
@@ -342,7 +356,7 @@ final class SEO {
 			}
 		}
 		$map = array(
-			'home'     => 'WebGuideBD AI Academy — বাংলায় AI ও LLM',
+			'home'     => 'বাংলায় AI ও LLM শিখুন | WebGuideBD AI Academy',
 			'roadmap'  => 'পাঠ্যক্রম | WebGuideBD AI Academy',
 			'author'   => 'আমাদের সম্পর্কে — Muhibbullah Ansary | WebGuideBD AI Academy',
 			'contact'  => 'যোগাযোগ — Muhibbullah Ansary | WebGuideBD AI Academy',

@@ -2,9 +2,21 @@
   'use strict';
 
   var themeKey = 'wgba-theme';
+  function syncThemeLabels(mode) {
+    // Label shows the mode you can switch TO.
+    var next = mode === 'dark' ? 'লাইট' : 'ডার্ক';
+    document.querySelectorAll('[data-wgba-theme-label]').forEach(function (el) {
+      el.textContent = next;
+    });
+    document.querySelectorAll('[data-wgba-theme-toggle]').forEach(function (btn) {
+      btn.setAttribute('aria-label', next === 'ডার্ক' ? 'ডার্ক থিম চালু করুন' : 'লাইট থিম চালু করুন');
+      btn.setAttribute('title', next === 'ডার্ক' ? 'ডার্ক থিম' : 'লাইট থিম');
+    });
+  }
   function applyTheme(mode) {
     document.documentElement.setAttribute('data-wgba-theme', mode);
     try { localStorage.setItem(themeKey, mode); } catch (e) {}
+    syncThemeLabels(mode);
   }
   try {
     var saved = localStorage.getItem(themeKey);
@@ -27,6 +39,31 @@
       if (side) side.classList.toggle('is-open');
     });
   });
+
+  (function setupMobileNav() {
+    var top = document.querySelector('[data-wgba-top]');
+    var toggle = document.querySelector('[data-wgba-nav-toggle]');
+    var nav = document.querySelector('[data-wgba-nav]');
+    if (!top || !toggle || !nav) return;
+    function setOpen(open) {
+      top.classList.toggle('is-nav-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.textContent = open ? 'বন্ধ' : 'মেনু';
+      document.body.classList.toggle('wgba-nav-lock', open);
+    }
+    toggle.addEventListener('click', function () {
+      setOpen(!top.classList.contains('is-nav-open'));
+    });
+    nav.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { setOpen(false); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
+    });
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 900) setOpen(false);
+    });
+  })();
 
   var filter = document.querySelector('[data-wgba-glossary-filter]');
   if (filter) {

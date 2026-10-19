@@ -12,18 +12,18 @@ $chapters = \WGBA\Content_Repository::list_chapters( true );
 <section class="wgba-home-hero" aria-labelledby="wgba-hero-title">
 	<div class="wgba-wrap">
 		<p class="wgba-eyebrow">বিনামূল্যে · বাংলায় · Practical AI Engineering</p>
-		<h1 id="wgba-hero-title">WebGuideBD AI Academy</h1>
-		<p class="wgba-lead">Muhibbullah Ansary-এর তৈরি AI ও LLM কোর্স—প্রথমে ধারণা, তারপর JavaScript অনুশীলন, পরে গভীর প্রকৌশল। W3Schools-এর মতো সহজ পাঠ → উদাহরণ → অনুশীলন ফ্লো।</p>
+		<h1 id="wgba-hero-title">বাংলায় AI ও LLM শিখুন</h1>
+		<p class="wgba-lead">Muhibbullah Ansary-এর তৈরি WebGuideBD AI Academy—প্রথমে ধারণা, তারপর JavaScript অনুশীলন, পরে গভীর প্রকৌশল। সহজ পাঠ → উদাহরণ → অনুশীলন ফ্লো।</p>
 		<p class="wgba-actions">
 			<a class="wgba-btn" href="<?php echo esc_url( \WGBA\Rewrite::url( 'lesson', 'ai-ki' ) ); ?>">প্রথম পাঠ শুরু »</a>
-			<a class="wgba-btn wgba-btn-ghost" href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">সব Tutorials</a>
+			<a class="wgba-btn wgba-btn-ghost" href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">সব অধ্যায়</a>
 		</p>
 		<p class="wgba-muted"><?php echo esc_html( \WGBA\Access::message_preview_hint() ); ?> <?php echo esc_html( \WGBA\Access::message_login_for_chapters() ); ?></p>
 	</div>
 </section>
 <section class="wgba-wrap wgba-section" aria-labelledby="wgba-chapters-title">
 	<div class="wgba-section-head">
-		<h2 id="wgba-chapters-title">Tutorials</h2>
+		<h2 id="wgba-chapters-title">অধ্যায়সমূহ</h2>
 		<a href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">পূর্ণ রোডম্যাপ »</a>
 	</div>
 	<ul class="wgba-tut-list">
@@ -33,7 +33,7 @@ $chapters = \WGBA\Content_Repository::list_chapters( true );
 			$url     = \WGBA\Rewrite::url( 'chapter', (string) $ch['slug'] );
 			$logged  = is_user_logged_in();
 			$badge_c = $public || $logged ? 'is-public' : 'is-login';
-			$badge_t = $public ? 'Public' : ( $logged ? 'Unlocked' : 'Login' );
+			$badge_t = $public ? 'পাবলিক' : ( $logged ? 'খোলা' : 'লগইন দরকার' );
 			?>
 			<li>
 				<a class="wgba-tut-item" href="<?php echo esc_url( $url ); ?>">
