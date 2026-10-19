@@ -1,7 +1,7 @@
 {
   "name": "webguidebd-ai-academy-build",
   "private": true,
-  "version": "0.1.28",
+  "version": "0.1.31",
   "description": "Build tools for WebGuideBD AI Academy playground assets",
   "scripts": {
     "build:playground": "node scripts/build-playground.mjs",

@@ -1,6 +1,6 @@
 <?php
 /**
- * Academy chrome header — single Bangla navigation + mobile sheet.
+ * Academy chrome — top meta bar + topic subnav (logo = home).
  *
  * @package WebGuideBD\AIAcademy
  */
@@ -14,7 +14,6 @@ $ch_ai = ( 'chapter' === $route && 'ai-o-llm-porichiti' === $slug )
 $ch_js = ( 'chapter' === $route && 'ai-shekhar-javascript' === $slug )
 	|| ( 'lesson' === $route && isset( $GLOBALS['wgba_active_chapter'] ) && 'ch-02-js-fundamentals' === $GLOBALS['wgba_active_chapter'] );
 
-$is_home     = ( 'home' === $route );
 $is_roadmap  = ( 'roadmap' === $route );
 $is_glossary = ( 'glossary' === $route || 'glossary_term' === $route );
 $is_projects = ( 'projects' === $route );
@@ -51,58 +50,81 @@ $logged_in   = is_user_logged_in();
 			<img
 				class="wgba-brand-logo wgba-brand-logo-light"
 				src="<?php echo esc_url( \WGBA\Site_Profile::logo_url( 'light' ) ); ?>"
-				width="160"
-				height="32"
+				width="192"
+				height="38"
 				alt="Web Guide BD"
 				decoding="async"
-				style="height:32px!important;width:auto!important;max-width:160px!important;max-height:32px!important;object-fit:contain!important;display:block!important"
+				style="height:38px!important;width:auto!important;max-width:192px!important;max-height:38px!important;object-fit:contain!important;display:block!important"
 			>
 			<img
 				class="wgba-brand-logo wgba-brand-logo-dark"
 				src="<?php echo esc_url( \WGBA\Site_Profile::logo_url( 'dark' ) ); ?>"
-				width="160"
-				height="32"
+				width="192"
+				height="38"
 				alt=""
 				decoding="async"
 				aria-hidden="true"
-				style="height:32px!important;width:auto!important;max-width:160px!important;max-height:32px!important;object-fit:contain!important;display:none!important"
+				style="height:38px!important;width:auto!important;max-width:192px!important;max-height:38px!important;object-fit:contain!important;display:none!important"
 			>
 			<span class="wgba-sr-only">WebGuideBD AI Academy</span>
 		</a>
-		<button
-			type="button"
-			class="wgba-nav-toggle"
-			data-wgba-nav-toggle
-			aria-controls="wgba-nav"
-			aria-expanded="false"
-		>
-			মেনু
-		</button>
-		<nav class="wgba-nav" id="wgba-nav" data-wgba-nav aria-label="প্রধান মেনু">
-			<a class="<?php echo $is_home ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'home' ) ); ?>">হোম</a>
-			<a class="<?php echo $is_roadmap ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">রোডম্যাপ</a>
-			<a class="<?php echo $ch_ai ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'chapter', 'ai-o-llm-porichiti' ) ); ?>">AI ও LLM</a>
-			<a class="<?php echo $ch_js ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'chapter', 'ai-shekhar-javascript' ) ); ?>">JavaScript</a>
-			<a class="<?php echo $is_glossary ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'glossary' ) ); ?>">শব্দকোষ</a>
-			<a class="<?php echo $is_projects ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'projects' ) ); ?>">প্রজেক্ট</a>
-			<a class="<?php echo $is_author ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'author' ) ); ?>">আমাদের সম্পর্কে</a>
-			<a class="<?php echo $is_contact ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'contact' ) ); ?>">যোগাযোগ</a>
-			<?php if ( $logged_in ) : ?>
-				<a class="<?php echo $is_dash ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'dashboard' ) ); ?>">ড্যাশবোর্ড</a>
-				<form class="wgba-inline-form" method="post" action="">
-					<?php wp_nonce_field( 'wgba_auth', 'wgba_auth_nonce' ); ?>
-					<input type="hidden" name="wgba_auth_action" value="logout">
-					<button type="submit" class="wgba-linkish">লগআউট</button>
-				</form>
-			<?php endif; ?>
-			<button type="button" class="wgba-theme-toggle" data-wgba-theme-toggle aria-label="থিম বদলান">
-				<span class="wgba-theme-ico" aria-hidden="true">◐</span>
-				<span class="wgba-theme-label" data-wgba-theme-label>ডার্ক</span>
-			</button>
+		<nav class="wgba-nav wgba-nav-meta" aria-label="সাইট মেনু">
+			<a class="<?php echo $is_author ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'author' ) ); ?>">About Us</a>
+			<a class="<?php echo $is_contact ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'contact' ) ); ?>">Contact Us</a>
 		</nav>
 		<?php if ( ! $logged_in ) : ?>
 			<a class="wgba-btn-login" href="<?php echo esc_url( \WGBA\Rewrite::url( 'login' ) ); ?>">লগইন</a>
 		<?php endif; ?>
+		<div class="wgba-account" data-wgba-account>
+			<button
+				type="button"
+				class="wgba-gear"
+				data-wgba-gear
+				aria-expanded="false"
+				aria-haspopup="menu"
+				aria-controls="wgba-account-menu"
+				aria-label="সেটিংস"
+			>
+				<svg class="wgba-gear-ico" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+					<path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.03 7.03 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 13.9 2h-3.8a.5.5 0 0 0-.49.42l-.36 2.54c-.59.24-1.13.55-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.48a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.83 14.58a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.42.34.66.22l2.39-.96c.5.39 1.04.7 1.63.94l.36 2.54c.05.24.25.42.49.42h3.8c.24 0 .44-.18.49-.42l.36-2.54c.59-.24 1.13-.55 1.63-.94l2.39.96c.24.12.52.02.66-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/>
+				</svg>
+			</button>
+			<div class="wgba-account-menu" id="wgba-account-menu" role="menu" hidden data-wgba-account-menu>
+				<?php if ( $logged_in ) : ?>
+					<a
+						role="menuitem"
+						class="wgba-account-item<?php echo $is_dash ? ' is-active' : ''; ?>"
+						href="<?php echo esc_url( \WGBA\Rewrite::url( 'dashboard' ) ); ?>"
+					>ড্যাশবোর্ড</a>
+					<form class="wgba-account-form" method="post" action="" role="none">
+						<?php wp_nonce_field( 'wgba_auth', 'wgba_auth_nonce' ); ?>
+						<input type="hidden" name="wgba_auth_action" value="logout">
+						<button type="submit" class="wgba-account-item" role="menuitem">লগআউট</button>
+					</form>
+					<div class="wgba-account-sep" role="separator"></div>
+				<?php endif; ?>
+				<button
+					type="button"
+					class="wgba-account-item wgba-theme-toggle"
+					role="menuitem"
+					data-wgba-theme-toggle
+					aria-label="থিম বদলান"
+				>
+					<span class="wgba-theme-ico" aria-hidden="true">◐</span>
+					<span data-wgba-theme-label>ডার্ক</span>
+					<span class="wgba-theme-suffix"> থিম</span>
+				</button>
+			</div>
+		</div>
 	</div>
 </header>
+<nav class="wgba-subnav" aria-label="পাঠ্যক্রম মেনু">
+	<div class="wgba-subnav-inner">
+		<a class="<?php echo $is_roadmap ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">রোডম্যাপ</a>
+		<a class="<?php echo $ch_ai ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'chapter', 'ai-o-llm-porichiti' ) ); ?>">AI ও LLM</a>
+		<a class="<?php echo $ch_js ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'chapter', 'ai-shekhar-javascript' ) ); ?>">JavaScript</a>
+		<a class="<?php echo $is_glossary ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'glossary' ) ); ?>">শব্দকোষ</a>
+		<a class="<?php echo $is_projects ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'projects' ) ); ?>">প্রজেক্ট</a>
+	</div>
+</nav>
 <main id="wgba-main" class="wgba-main">

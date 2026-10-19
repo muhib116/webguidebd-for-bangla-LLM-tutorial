@@ -22,8 +22,8 @@
   --wgba-radius: 5px;
   --wgba-max: 1400px;
   --wgba-prose: 900px;
-  --wgba-top-h: 56px;
-  --wgba-sub-h: 0px; /* legacy offset; second nav bar removed */
+  --wgba-top-h: 64px;
+  --wgba-sub-h: 44px;
   --wgba-font: "Source Sans 3", "Noto Sans Bengali", "Segoe UI", Tahoma, Arial, sans-serif;
   --wgba-mono: "Source Code Pro", "IBM Plex Mono", Consolas, "Courier New", monospace;
   color-scheme: light;
@@ -113,7 +113,7 @@ html { scroll-behavior: smooth; }
   border-bottom: 1px solid #e7e9eb;
   height: var(--wgba-top-h);
   max-height: var(--wgba-top-h);
-  overflow: hidden; /* never let a huge logo bleed into the hero */
+  overflow: visible; /* gear dropdown must paint below the bar */
 }
 .admin-bar .wgba-top { top: 32px; }
 @media screen and (max-width: 782px) {
@@ -128,14 +128,14 @@ html { scroll-behavior: smooth; }
 .wgba-top-inner {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   height: var(--wgba-top-h);
   max-height: var(--wgba-top-h);
   max-width: var(--wgba-max);
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 20px;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
 }
 
@@ -149,8 +149,8 @@ html { scroll-behavior: smooth; }
   font-size: 18px;
   white-space: nowrap;
   flex: 0 0 auto;
-  max-width: min(200px, 48vw);
-  max-height: 40px;
+  max-width: min(240px, 52vw);
+  max-height: 48px;
   overflow: hidden;
   line-height: 0;
 }
@@ -164,10 +164,10 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
 .wgba-top .wgba-brand img.wgba-brand-logo,
 .wgba-brand img.wgba-brand-logo {
   display: block !important;
-  height: 32px !important;
+  height: 38px !important; /* ~20% above prior 32px clamp */
   width: auto !important;
-  max-width: 160px !important;
-  max-height: 32px !important;
+  max-width: 192px !important;
+  max-height: 38px !important;
   min-height: 0 !important;
   object-fit: contain !important;
   object-position: left center !important;
@@ -201,16 +201,15 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  gap: 2px;
+  gap: 4px;
   margin-left: auto;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   justify-content: flex-end;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
 }
-.wgba-nav::-webkit-scrollbar { display: none; }
+.wgba-nav-meta {
+  flex: 0 0 auto;
+}
 
 .wgba-nav a,
 .wgba-linkish {
@@ -219,10 +218,10 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
   background: none;
   border: 0;
   font: inherit;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 7px 10px;
   border-radius: var(--wgba-radius);
 }
 
@@ -245,114 +244,170 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
 
 .wgba-inline-form { display: inline; margin: 0; }
 
-.wgba-theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+/* Gear account / settings menu (dashboard, logout, theme) */
+.wgba-account {
+  position: relative;
+  flex: 0 0 auto;
+  margin-left: 4px;
+}
+.wgba-gear {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   border: 1px solid var(--wgba-border);
-  background: transparent;
-  color: #000;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 10px;
+  background: #fff;
+  color: #141c16;
   cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 999px;
   flex-shrink: 0;
+}
+[data-wgba-theme="dark"] .wgba-gear {
+  background: #1d2a35;
+  color: #f7f1e4;
+  border-color: #38444d;
+}
+.wgba-gear:hover,
+.wgba-account.is-open .wgba-gear {
+  background: #f1f1f1;
+}
+[data-wgba-theme="dark"] .wgba-gear:hover,
+[data-wgba-theme="dark"] .wgba-account.is-open .wgba-gear {
+  background: #38444d;
+}
+.wgba-gear-ico { display: block; }
+
+.wgba-account-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 70;
+  min-width: 200px;
+  padding: 8px;
+  border: 1px solid var(--wgba-border);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+[data-wgba-theme="dark"] .wgba-account-menu {
+  background: #1d2a35;
+  border-color: #38444d;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+.wgba-account-menu[hidden] { display: none !important; }
+
+.wgba-account-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #141c16 !important;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none !important;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+[data-wgba-theme="dark"] .wgba-account-item { color: #f1f1f1 !important; }
+.wgba-account-item:hover,
+.wgba-account-item.is-active {
+  background: #f1f1f1;
+}
+[data-wgba-theme="dark"] .wgba-account-item:hover,
+[data-wgba-theme="dark"] .wgba-account-item.is-active {
+  background: #38444d;
+}
+.wgba-account-form { margin: 0; }
+.wgba-account-sep {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--wgba-border);
+}
+[data-wgba-theme="dark"] .wgba-account-sep { background: #38444d; }
+
+.wgba-theme-toggle.wgba-account-item {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-weight: 600;
   white-space: nowrap;
 }
-[data-wgba-theme="dark"] .wgba-theme-toggle {
-  color: #ddd;
-  border-color: #38444d;
-}
-.wgba-theme-toggle:hover { background: #f1f1f1; }
-[data-wgba-theme="dark"] .wgba-theme-toggle:hover { background: #38444d; }
 .wgba-theme-ico { font-size: 14px; line-height: 1; }
-.wgba-theme-label { letter-spacing: 0.01em; }
+.wgba-theme-suffix { font-weight: 500; opacity: 0.85; }
 
-.wgba-nav-toggle {
-  display: none;
-  margin-left: auto;
-  border: 1px solid var(--wgba-border);
-  background: #fff;
-  color: #000;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 7px 12px;
-  border-radius: var(--wgba-radius);
-  flex-shrink: 0;
-}
-[data-wgba-theme="dark"] .wgba-nav-toggle {
-  background: #1d2a35;
-  color: #fff;
-  border-color: #38444d;
-}
-.wgba-nav-toggle:hover { background: #f1f1f1; }
-[data-wgba-theme="dark"] .wgba-nav-toggle:hover { background: #38444d; }
-
-body.wgba-nav-lock { overflow: hidden; }
-
-/* Desktop: soft edge hint when nav can scroll horizontally */
 .wgba-top-inner { position: relative; }
-@media (min-width: 901px) {
-  .wgba-nav {
-    mask-image: linear-gradient(90deg, #000 0%, #000 calc(100% - 18px), transparent 100%);
-  }
+
+/* —— Second topic bar (W3-style dark strip) —— */
+.wgba-subnav {
+  position: sticky;
+  top: var(--wgba-top-h);
+  z-index: 45;
+  height: var(--wgba-sub-h);
+  background: var(--wgba-dark);
+  border-bottom: 1px solid transparent;
+}
+.admin-bar .wgba-subnav { top: calc(32px + var(--wgba-top-h)); }
+@media screen and (max-width: 782px) {
+  .admin-bar .wgba-subnav { top: calc(46px + var(--wgba-top-h)); }
+}
+[data-wgba-theme="dark"] .wgba-subnav {
+  background: #0d1520;
+  border-bottom-color: #38444d;
+}
+
+.wgba-subnav-inner {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: var(--wgba-sub-h);
+  max-width: var(--wgba-max);
+  margin: 0 auto;
+  padding: 0 16px;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  box-sizing: border-box;
+}
+.wgba-subnav-inner::-webkit-scrollbar { display: none; }
+
+.wgba-subnav a {
+  flex: 0 0 auto;
+  color: #fff !important;
+  text-decoration: none !important;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--wgba-radius);
+  white-space: nowrap;
+}
+.wgba-subnav a:hover,
+.wgba-subnav a.is-active {
+  background: var(--wgba-green);
+  color: #fff !important;
 }
 
 @media (max-width: 900px) {
-  .wgba-nav-toggle { display: inline-flex; }
-  .wgba-top { position: sticky; }
   .wgba-top-inner { flex-wrap: nowrap; }
-  .wgba-nav {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 60;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 2px;
-    margin: 0;
-    padding: 10px 12px 16px;
-    max-height: min(70vh, 520px);
-    overflow-x: hidden;
-    overflow-y: auto;
-    background: #fff;
-    border-bottom: 1px solid var(--wgba-border);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-    mask-image: none;
-  }
-  [data-wgba-theme="dark"] .wgba-nav {
-    background: #1d2a35;
-    border-bottom-color: #38444d;
-  }
-  .wgba-top.is-nav-open .wgba-nav { display: flex; }
-  .wgba-nav a,
-  .wgba-nav .wgba-linkish,
-  .wgba-nav .wgba-theme-toggle {
-    width: 100%;
-    justify-content: flex-start;
-    text-align: left;
-    padding: 12px 14px;
-    font-size: 16px;
-    border-radius: 8px;
-  }
-  .wgba-nav .wgba-inline-form { width: 100%; }
-  .wgba-nav .wgba-inline-form .wgba-linkish { width: 100%; }
+  .wgba-account { margin-left: 0; }
+  .wgba-nav-meta a { padding: 7px 8px; font-size: 14px; }
   .wgba-top .wgba-brand img.wgba-brand-logo {
-    height: 30px !important;
-    max-height: 30px !important;
-    max-width: min(140px, 38vw) !important;
+    height: 36px !important;
+    max-height: 36px !important;
+    max-width: min(168px, 42vw) !important;
   }
+  .wgba-subnav-inner { padding: 0 10px; }
+  .wgba-subnav a { padding: 8px 12px; font-size: 14px; }
 }
-
-/* Second topic bar removed — single top nav only. */
-.wgba-subnav { display: none !important; }
 
 /* —— Buttons (W3 green) —— */
 .wgba-btn {
@@ -1856,9 +1911,9 @@ a.wgba-tut-item:hover {
     font-size: 13px;
   }
   .wgba-top .wgba-brand img.wgba-brand-logo {
-    height: 30px !important;
-    max-height: 30px !important;
-    max-width: min(148px, 42vw) !important;
+    height: 36px !important;
+    max-height: 36px !important;
+    max-width: min(178px, 46vw) !important;
   }
   .wgba-brand-text { font-size: 14px; }
   .wgba-brand-mark { width: 30px; height: 30px; font-size: 11px; }
@@ -1876,9 +1931,9 @@ a.wgba-tut-item:hover {
   .wgba-body h3 { font-size: 18px; }
   .wgba-lead { font-size: 16px; }
   .wgba-top .wgba-brand img.wgba-brand-logo {
-    height: 28px !important;
-    max-height: 28px !important;
-    max-width: min(120px, 34vw) !important;
+    height: 34px !important;
+    max-height: 34px !important;
+    max-width: min(144px, 40vw) !important;
   }
   .wgba-brand-text { max-width: none; overflow: visible; text-overflow: unset; white-space: nowrap; }
   .wgba-top-inner { gap: 6px; }

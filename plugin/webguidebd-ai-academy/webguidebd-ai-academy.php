@@ -3,7 +3,7 @@
  * Plugin Name:       WebGuideBD AI Academy
  * Plugin URI:        https://webguidebd.site/ai-academy/
  * Description:       Bengali AI & LLM learning platform — curriculum, access control, progress, and safe JS playground.
- * Version:           0.1.28
+ * Version:           0.1.31
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Muhibbullah Ansary
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WGBA_VERSION', '0.1.28' );
+define( 'WGBA_VERSION', '0.1.31' );
 define( 'WGBA_PLUGIN_FILE', __FILE__ );
 define( 'WGBA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WGBA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

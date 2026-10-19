@@ -7,10 +7,10 @@
     document.querySelectorAll('header.wgba-top .wgba-brand img.wgba-brand-logo').forEach(function (img) {
       var isDarkLogo = img.classList.contains('wgba-brand-logo-dark');
       var show = theme === 'dark' ? isDarkLogo : !isDarkLogo;
-      img.style.setProperty('height', '32px', 'important');
-      img.style.setProperty('max-height', '32px', 'important');
+      img.style.setProperty('height', '38px', 'important');
+      img.style.setProperty('max-height', '38px', 'important');
       img.style.setProperty('width', 'auto', 'important');
-      img.style.setProperty('max-width', '160px', 'important');
+      img.style.setProperty('max-width', '192px', 'important');
       img.style.setProperty('object-fit', 'contain', 'important');
       img.style.setProperty('display', show ? 'block' : 'none', 'important');
     });
@@ -53,37 +53,39 @@
     });
   });
 
+  (function setupAccountMenu() {
+    var wrap = document.querySelector('[data-wgba-account]');
+    var gear = document.querySelector('[data-wgba-gear]');
+    var menu = document.querySelector('[data-wgba-account-menu]');
+    if (!wrap || !gear || !menu) return;
+    function setOpen(open) {
+      wrap.classList.toggle('is-open', open);
+      gear.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) menu.removeAttribute('hidden');
+      else menu.setAttribute('hidden', '');
+    }
+    gear.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(!wrap.classList.contains('is-open'));
+    });
+    menu.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+    menu.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { setOpen(false); });
+    });
+    document.addEventListener('click', function () { setOpen(false); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  })();
+
   document.querySelectorAll('[data-wgba-sidebar-toggle]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var side = btn.closest('.wgba-sidebar');
       if (side) side.classList.toggle('is-open');
     });
   });
-
-  (function setupMobileNav() {
-    var top = document.querySelector('[data-wgba-top]');
-    var toggle = document.querySelector('[data-wgba-nav-toggle]');
-    var nav = document.querySelector('[data-wgba-nav]');
-    if (!top || !toggle || !nav) return;
-    function setOpen(open) {
-      top.classList.toggle('is-nav-open', open);
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      toggle.textContent = open ? 'বন্ধ' : 'মেনু';
-      document.body.classList.toggle('wgba-nav-lock', open);
-    }
-    toggle.addEventListener('click', function () {
-      setOpen(!top.classList.contains('is-nav-open'));
-    });
-    nav.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', function () { setOpen(false); });
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') setOpen(false);
-    });
-    window.addEventListener('resize', function () {
-      if (window.innerWidth > 900) setOpen(false);
-    });
-  })();
 
   var filter = document.querySelector('[data-wgba-glossary-filter]');
   if (filter) {
