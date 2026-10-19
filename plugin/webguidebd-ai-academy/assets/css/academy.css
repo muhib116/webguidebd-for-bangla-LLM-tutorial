@@ -447,11 +447,6 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
   .wgba-subnav a { padding: 8px 12px; font-size: 14px; }
 }
 
-@media (max-width: 480px) {
-  .wgba-nav-meta a { padding: 6px 6px; font-size: 12px; }
-  .wgba-gear { width: 36px; height: 36px; }
-}
-
 /* —— Buttons (W3 green) —— */
 .wgba-btn {
   display: inline-block;
@@ -2020,7 +2015,9 @@ a.wgba-tut-item:hover {
 @media (max-width: 480px) {
   .wgba-wrap { width: min(100% - 20px, var(--wgba-max)); }
   .wgba-top-inner { padding: 0 8px; }
-  .wgba-nav a { font-size: 12px; padding: 6px 6px; }
+  .wgba-nav a,
+  .wgba-nav-meta a { font-size: 12px; padding: 6px 6px; }
+  .wgba-gear { width: 36px; height: 36px; }
   .wgba-btn-login { padding: 6px 10px; font-size: 12px; }
   .wgba-brand-text { font-size: 13px; max-width: 36vw; }
   .wgba-home-hero .wgba-actions,
