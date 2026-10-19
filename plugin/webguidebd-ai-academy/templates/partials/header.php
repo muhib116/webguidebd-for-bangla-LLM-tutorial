@@ -65,7 +65,7 @@ $logged_in   = is_user_logged_in();
 				alt=""
 				decoding="async"
 				aria-hidden="true"
-				style="height:32px!important;width:auto!important;max-width:160px!important;max-height:32px!important;object-fit:contain!important;display:block!important"
+				style="height:32px!important;width:auto!important;max-width:160px!important;max-height:32px!important;object-fit:contain!important;display:none!important"
 			>
 			<span class="wgba-sr-only">WebGuideBD AI Academy</span>
 		</a>

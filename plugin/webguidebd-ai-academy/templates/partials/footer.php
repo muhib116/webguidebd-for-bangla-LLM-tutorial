@@ -25,7 +25,7 @@ $logged_in = is_user_logged_in();
 						height="40"
 						alt="Web Guide BD"
 						decoding="async"
-						style="height:40px!important;width:auto!important;max-width:200px!important;max-height:40px!important;object-fit:contain!important;display:block!important"
+						style="height:40px!important;width:auto!important;max-width:200px!important;max-height:40px!important;object-fit:contain!important;display:none!important"
 					>
 					<img
 						class="wgba-brand-logo wgba-brand-logo-dark"
