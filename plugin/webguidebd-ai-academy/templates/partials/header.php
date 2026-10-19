@@ -51,19 +51,21 @@ $logged_in   = is_user_logged_in();
 			<img
 				class="wgba-brand-logo wgba-brand-logo-light"
 				src="<?php echo esc_url( \WGBA\Site_Profile::logo_url( 'light' ) ); ?>"
-				width="180"
-				height="36"
+				width="160"
+				height="32"
 				alt="Web Guide BD"
 				decoding="async"
+				style="height:32px!important;width:auto!important;max-width:160px!important;max-height:32px!important;object-fit:contain!important;display:block!important"
 			>
 			<img
 				class="wgba-brand-logo wgba-brand-logo-dark"
 				src="<?php echo esc_url( \WGBA\Site_Profile::logo_url( 'dark' ) ); ?>"
-				width="180"
-				height="36"
+				width="160"
+				height="32"
 				alt=""
 				decoding="async"
 				aria-hidden="true"
+				style="height:32px!important;width:auto!important;max-width:160px!important;max-height:32px!important;object-fit:contain!important;display:block!important"
 			>
 			<span class="wgba-sr-only">WebGuideBD AI Academy</span>
 		</a>

@@ -1,6 +1,25 @@
 (function () {
   'use strict';
 
+  // Hard-clamp brand logos — theme/Elementor img rules can ignore stylesheet height.
+  function clampBrandLogos() {
+    var theme = document.documentElement.getAttribute('data-wgba-theme');
+    document.querySelectorAll('header.wgba-top .wgba-brand img.wgba-brand-logo').forEach(function (img) {
+      var isDarkLogo = img.classList.contains('wgba-brand-logo-dark');
+      var show = theme === 'dark' ? isDarkLogo : !isDarkLogo;
+      img.style.setProperty('height', '32px', 'important');
+      img.style.setProperty('max-height', '32px', 'important');
+      img.style.setProperty('width', 'auto', 'important');
+      img.style.setProperty('max-width', '160px', 'important');
+      img.style.setProperty('object-fit', 'contain', 'important');
+      img.style.setProperty('display', show ? 'block' : 'none', 'important');
+    });
+  }
+  clampBrandLogos();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', clampBrandLogos);
+  }
+
   var themeKey = 'wgba-theme';
   function syncThemeLabels(mode) {
     // Label shows the mode you can switch TO.
@@ -17,6 +36,7 @@
     document.documentElement.setAttribute('data-wgba-theme', mode);
     try { localStorage.setItem(themeKey, mode); } catch (e) {}
     syncThemeLabels(mode);
+    clampBrandLogos();
   }
   try {
     var saved = localStorage.getItem(themeKey);

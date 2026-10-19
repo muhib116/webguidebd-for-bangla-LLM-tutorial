@@ -112,6 +112,8 @@ html { scroll-behavior: smooth; }
   background: #ffffff;
   border-bottom: 1px solid #e7e9eb;
   height: var(--wgba-top-h);
+  max-height: var(--wgba-top-h);
+  overflow: hidden; /* never let a huge logo bleed into the hero */
 }
 .admin-bar .wgba-top { top: 32px; }
 @media screen and (max-width: 782px) {
@@ -128,10 +130,13 @@ html { scroll-behavior: smooth; }
   align-items: center;
   gap: 12px;
   height: var(--wgba-top-h);
+  max-height: var(--wgba-top-h);
   max-width: var(--wgba-max);
   margin: 0 auto;
   padding: 0 16px;
   width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .wgba-brand {
@@ -143,23 +148,34 @@ html { scroll-behavior: smooth; }
   font-weight: 700;
   font-size: 18px;
   white-space: nowrap;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  max-width: min(200px, 48vw);
+  max-height: 40px;
+  overflow: hidden;
+  line-height: 0;
 }
 
 [data-wgba-theme="dark"] .wgba-brand { color: #fff !important; }
 
 /* Beat theme/Elementor `img { max-width:100%; height:auto }` which otherwise
-   expands the 1024×350 lockup and crushes the nav (page overflow). */
+   expands the lockup and crushes the nav (page overflow). */
+body.wgba-body .wgba-top .wgba-brand img.wgba-brand-logo,
+body.wgba-body header.wgba-top a.wgba-brand > img,
 .wgba-top .wgba-brand img.wgba-brand-logo,
 .wgba-brand img.wgba-brand-logo {
-  display: block;
-  height: 36px !important;
+  display: block !important;
+  height: 32px !important;
   width: auto !important;
-  max-width: min(180px, 42vw) !important;
-  max-height: 36px !important;
-  object-fit: contain;
-  object-position: left center;
-  flex-shrink: 0;
+  max-width: 160px !important;
+  max-height: 32px !important;
+  min-height: 0 !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .wgba-brand-logo-dark { display: none !important; }

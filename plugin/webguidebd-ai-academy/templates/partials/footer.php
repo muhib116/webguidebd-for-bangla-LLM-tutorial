@@ -25,6 +25,7 @@ $logged_in = is_user_logged_in();
 						height="40"
 						alt="Web Guide BD"
 						decoding="async"
+						style="height:40px!important;width:auto!important;max-width:200px!important;max-height:40px!important;object-fit:contain!important;display:block!important"
 					>
 					<img
 						class="wgba-brand-logo wgba-brand-logo-dark"
@@ -34,6 +35,7 @@ $logged_in = is_user_logged_in();
 						alt=""
 						decoding="async"
 						aria-hidden="true"
+						style="height:40px!important;width:auto!important;max-width:200px!important;max-height:40px!important;object-fit:contain!important;display:block!important"
 					>
 					<span class="wgba-footer-tag">বাংলায় practical AI ও LLM — বিনামূল্যে</span>
 				</a>
