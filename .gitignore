@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.log
+.npm-cache/
+dist/
+.env
+.env.*
+*.pem
+.vscode/
+.idea/
+wgba-deploy-payload.json
+**/wgba-deploy-payload.json
+
+.tools/

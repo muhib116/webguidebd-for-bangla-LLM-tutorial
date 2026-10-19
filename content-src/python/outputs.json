@@ -1,0 +1,60 @@
+{
+  "ranAt": "2026-10-19",
+  "env": {
+    "python": "3.9.6",
+    "machine": "arm64",
+    "system": "Darwin 26.6.1",
+    "torch": "2.8.0",
+    "numpy": "2.0.2"
+  },
+  "files": {
+    "ch13/01_syntax.py": {
+      "stdout": "মোট: 3480\nস্টকে আছে: ['SAREE-BLUE', 'KURTI-GRN']\n0: নীল সুতি শাড়ি — 1,200 টাকা\n1: সবুজ কুর্তি — 950 টাকা\n2: লন থ্রি-পিস — 1,850 টাকা\nNone ও bool: True True\nভাগ: 3.5 3 1 1024\nঋণাত্মক: -4 2\nস্লাইস: [950, 1850] 1850 14\nKeyError: 'SCARF-RED'\nget: নেই\nএকই তালিকা: [1, 2, 3] | কপি: False",
+      "ok": true,
+      "ms": 39,
+      "sha256": "2ae2b0ac8eaa56a8561994f5ddc08a0896c77314f921d9e6fe1772f028c72507"
+    },
+    "ch13/02_classes_modules.py": {
+      "stdout": "Product(sku='KURTI-GRN', name='সবুজ কুর্তি', price=950, stock=3)\n৫টি পাওয়া যাবে? False\nNeuron(w=[2.0, -1.0], b=0.5) → 2.5 0.0\nrandom (seed 42): [0.639, 0.025, 0.275]\nPython 3.9.6",
+      "ok": true,
+      "ms": 66,
+      "sha256": "070369274e2f5b74cd5a59a6c6bcf1ec5602257b2eeb71cb153b5afc11013720"
+    },
+    "ch13/03_numpy.py": {
+      "stdout": "shape: (2, 3) dtype: float64\nX @ X.T = [[14.0, 32.0], [32.0, 77.0]]\n(2,3) + (3,)  → [[11.0, 22.0, 33.0], [14.0, 25.0, 36.0]]\n(2,3) + (2,1) → [[101.0, 102.0, 103.0], [204.0, 205.0, 206.0]]\nValueError: operands could not be broadcast together with shapes (2,3) (2,) \nkeepdims দিয়ে: [[-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0]]\nsoftmax: [[0.665, 0.245, 0.09], [1.0, 0.0, 0.0]] | সারির যোগ: [0.9999999999999999, 1.0]\nW shape: (3, 4) | (2,3) @ (3,4) → (2, 4)\nNumPy 2.0.2",
+      "ok": true,
+      "ms": 191,
+      "sha256": "facba0772223aea0544cd84bf34c153d96ea3c69b61d47bcb670e5519e62d093"
+    },
+    "ch13/04_tensors_autograd.py": {
+      "stdout": "shape: (2, 2) | dtype: torch.float32 | device: cpu\nপূর্ণসংখ্যা tensor-এর dtype: torch.int64\nএই কম্পিউটারে পাওয়া device: mps (নিচের হিসাব CPU-তে)\nloss: 12.25 | dL/dw: -21.0 | dL/db: -7.0\nzero_grad ছাড়া দ্বিতীয় backward-এর পরে dL/dw: -42.0\nupdate-এর পরে w: 2.21 | requires_grad: True\nRuntimeError: mat1 and mat2 shapes cannot be multiplied (2x3 and 2x3)\n(2,3) @ (3,2) → (2, 2)\nPyTorch 2.8.0",
+      "ok": true,
+      "ms": 1839,
+      "sha256": "e061520ba3cb648a86e59c894d39a77612480bfd954bbbc6fd9399ba27f86823"
+    },
+    "ch13/05_data_train_checkpoint.py": {
+      "stdout": "batch সংখ্যা প্রতি epoch: 10\nepoch  1 | শেষ batch loss 0.0781 | val loss 0.2751\nepoch 10 | শেষ batch loss 0.1016 | val loss 0.1477\nepoch 30 | শেষ batch loss 0.0753 | val loss 0.1547\nশেখা w = 3.045, b = 1.958 (আসল 3, 2)\nআসল সূত্র (3x + 2) দিয়েও এই val সেটে loss 0.1339 — noise কোনো মডেল সরাতে পারে না\ncheckpoint থেকে ফেরানো মডেল একই আউটপুট দেয়: True | epoch: 30",
+      "ok": true,
+      "ms": 3225,
+      "sha256": "6043f29bc0f08d80103c8ee750a4fac2c177c019fad2271d4ec84a1ed4368577"
+    },
+    "ch13/06_circle_network.py": {
+      "stdout": "প্রথম বিন্দু: [-0.149, -0.916] | train-এ ভেতরের বিন্দু: 76\ntest-এ “সব 0”: 0.5875 (অধ্যায় ৫-এর QuickJS ফল 0.5875—একই ডেটা)\n2→8→1 (tanh, sigmoid):\n  epoch   0 loss 0.707\n  epoch 100 loss 0.671\n  epoch 799 loss 0.131\nlogistic regression (hidden নেই):\n  epoch   0 loss 0.757\n  epoch 100 loss 0.687\n  epoch 799 loss 0.687\ntest accuracy → neural net 0.9875 | logistic 0.4375 | সব 0 0.5875\nparameter সংখ্যা: 33",
+      "ok": true,
+      "ms": 2997,
+      "sha256": "c44b23f34982c0ab91ea9d82090c635a2b046e241a7a46c6e05be593b96b0423"
+    },
+    "ch13/07_char_lm.py": {
+      "stdout": "বাক্য: 70 | train: 56 | val: 14\nvocabulary (কোড পয়েন্ট + চিহ্ন): 35\nপ্রশিক্ষণ-উদাহরণ: 1369 | val: 339\nuniform loss: 3.555\nbigram (গণনা) val loss: 1.890\nparameter: 11347\nstep    0 | train 3.515 | val 3.527\nstep  500 | train 0.281 | val 0.353\nstep 1000 | train 0.276 | val 0.342\nstep 1500 | train 0.271 | val 0.334\nনমুনা: ওড়না এর দাম কত | নতুন বাক্য\nনমুনা: আমি সবুজ থ্রি-পিস নিতে চাই | train-এ হুবহু আছে\nনমুনা: সবুজ ওড়না কুর্তি এর দাম কত | নতুন বাক্য\nনমুনা: আমি লাল থ্রি-পিস নিতে চাই | train-এ হুবহু আছে\nনমুনা: সবুজ শাড়ি ঢাকার বাইরে কবে পাঞ্জাবি কি স | নতুন বাক্য\nনমুনা: সবুজ থ্রি-পিস নিতে চাই | নতুন বাক্য",
+      "ok": true,
+      "ms": 3574,
+      "sha256": "39b8b0d1eee0115564da06310bfb5963fcd3b5db25a3962f120c857fc4e67436"
+    },
+    "ch14/01_capstone_b_starter.py": {
+      "stdout": "baseline CTX=3 | seed 0 | val loss 0.335 | train-কপি 0.05 | parameter 11347\nbaseline CTX=3 | seed 1 | val loss 0.331 | train-কপি 0.15 | parameter 11347\nbaseline CTX=3 | seed 2 | val loss 0.325 | train-কপি 0.00 | parameter 11347\nপরিবর্তন CTX=5 | seed 0 | val loss 0.287 | train-কপি 0.25 | parameter 15443\nপরিবর্তন CTX=5 | seed 1 | val loss 0.285 | train-কপি 0.35 | parameter 15443\nপরিবর্তন CTX=5 | seed 2 | val loss 0.283 | train-কপি 0.30 | parameter 15443\nনিয়ন্ত্রণ CTX=5 emb=10 | seed 0 | val loss 0.292 | train-কপি 0.35 | parameter 11393\nনিয়ন্ত্রণ CTX=5 emb=10 | seed 1 | val loss 0.292 | train-কপি 0.40 | parameter 11393\nনিয়ন্ত্রণ CTX=5 emb=10 | seed 2 | val loss 0.287 | train-কপি 0.20 | parameter 11393\nconfig: {'steps': 1500, 'batch': 64, 'lr': 0.003, 'emb': 16, 'hidden': 128, 'samples': 20} | seeds: [0, 1, 2]\nbaseline CTX=3: val loss গড় 0.330 ± 0.005 (sd) | train-কপি গড় 0.07\nপরিবর্তন CTX=5: val loss গড় 0.285 ± 0.002 (sd) | train-কপি গড় 0.30\nনিয়ন্ত্রণ CTX=5 emb=10: val loss গড় 0.291 ± 0.003 (sd) | train-কপি গড় 0.32\nseed ধরে পার্থক্য (পরিবর্তন CTX=5 − baseline): [-0.048, -0.046, -0.042]\nseed ধরে পার্থক্য (নিয়ন্ত্রণ CTX=5 emb=10 − baseline): [-0.043, -0.038, -0.038]",
+      "ok": true,
+      "ms": 10645,
+      "sha256": "596befacb77490eb0f5c484e57da1fe6dab5a7c8e9cd68f7502a75d470629b9b"
+    }
+  }
+}

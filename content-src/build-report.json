@@ -1,0 +1,1420 @@
+{
+  "date": "2026-10-19",
+  "chapters": 14,
+  "lessons": 93,
+  "jsRuns": 101,
+  "assertions": 330,
+  "manifest": [
+    {
+      "chapter": "ch-01-ai-llm-intro",
+      "dir": "public",
+      "lessons": 8
+    },
+    {
+      "chapter": "ch-02-js-fundamentals",
+      "dir": "public",
+      "lessons": 7
+    },
+    {
+      "chapter": "ch-03-math-foundations",
+      "dir": "restricted",
+      "lessons": 8
+    },
+    {
+      "chapter": "ch-04-ml-foundations",
+      "dir": "restricted",
+      "lessons": 8
+    },
+    {
+      "chapter": "ch-05-neural-networks",
+      "dir": "restricted",
+      "lessons": 7
+    },
+    {
+      "chapter": "ch-06-tokens-language-models",
+      "dir": "restricted",
+      "lessons": 6
+    },
+    {
+      "chapter": "ch-07-embeddings",
+      "dir": "restricted",
+      "lessons": 5
+    },
+    {
+      "chapter": "ch-08-attention-transformers",
+      "dir": "restricted",
+      "lessons": 5
+    },
+    {
+      "chapter": "ch-09-llm-training-generation",
+      "dir": "restricted",
+      "lessons": 6
+    },
+    {
+      "chapter": "ch-10-llm-app-engineering",
+      "dir": "restricted",
+      "lessons": 7
+    },
+    {
+      "chapter": "ch-11-rag",
+      "dir": "restricted",
+      "lessons": 7
+    },
+    {
+      "chapter": "ch-12-workflow-agent-eval",
+      "dir": "restricted",
+      "lessons": 6
+    },
+    {
+      "chapter": "ch-13-js-to-python-pytorch",
+      "dir": "restricted",
+      "lessons": 7
+    },
+    {
+      "chapter": "ch-14-capstones",
+      "dir": "restricted",
+      "lessons": 6
+    }
+  ],
+  "lessonsDetail": [
+    {
+      "id": "les-01-01-what-is-ai",
+      "chapter": "ch-01-ai-llm-intro",
+      "title": "AI কী এবং কেন গুরুত্বপূর্ণ",
+      "prereqs": [],
+      "minutes": 20,
+      "required": true,
+      "js": 0,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-01-02-ml-dl-llm",
+      "chapter": "ch-01-ai-llm-intro",
+      "title": "Machine Learning, Deep Learning ও LLM",
+      "prereqs": [
+        "les-01-01-what-is-ai"
+      ],
+      "minutes": 25,
+      "required": true,
+      "js": 0,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-01-03-train-vs-inference",
+      "chapter": "ch-01-ai-llm-intro",
+      "title": "Training বনাম Inference",
+      "prereqs": [
+        "les-01-02-ml-dl-llm"
+      ],
+      "minutes": 20,
+      "required": true,
+      "js": 0,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-01-04-models-params-data",
+      "chapter": "ch-01-ai-llm-intro",
+      "title": "Model, Parameter, Dataset, Feature, Label",
+      "prereqs": [
+        "les-01-03-train-vs-inference"
+      ],
+      "minutes": 25,
+      "required": true,
+      "js": 0,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-01-05-capabilities-limits",
+      "chapter": "ch-01-ai-llm-intro",
+      "title": "সক্ষমতা ও সীমাবদ্ধতা",
+      "prereqs": [
+        "les-01-04-models-params-data"
+      ],
+      "minutes": 20,
+      "required": true,
+      "js": 0,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-01-06-engineer-vs-researcher",
+      "chapter": "ch-01-ai-llm-intro",
+      "title": "AI Engineer বনাম AI Researcher",
+      "prereqs": [
+        "les-01-05-capabilities-limits"
+      ],
+      "minutes": 15,
+      "required": true,
+      "js": 0,
+      "python": 0,
+      "quiz": 2,
+      "synthetic": false
+    },
+    {
+      "id": "les-01-07-learning-roadmap",
+      "chapter": "ch-01-ai-llm-intro",
+      "title": "শেখার রোডম্যাপ",
+      "prereqs": [
+        "les-01-06-engineer-vs-researcher"
+      ],
+      "minutes": 15,
+      "required": true,
+      "js": 0,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-01-08-rule-vs-examples",
+      "chapter": "ch-01-ai-llm-intro",
+      "title": "অ্যাক্টিভিটি: নিয়ম বনাম উদাহরণ-ভিত্তিক আচরণ",
+      "prereqs": [
+        "les-01-04-models-params-data",
+        "les-01-07-learning-roadmap"
+      ],
+      "minutes": 30,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-02-01-values-types",
+      "chapter": "ch-02-js-fundamentals",
+      "title": "Variables, Values ও Types",
+      "prereqs": [
+        "les-01-07-learning-roadmap"
+      ],
+      "minutes": 30,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-02-02-arrays-objects",
+      "chapter": "ch-02-js-fundamentals",
+      "title": "Arrays ও Objects",
+      "prereqs": [
+        "les-02-01-values-types"
+      ],
+      "minutes": 30,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-02-03-functions-conditions",
+      "chapter": "ch-02-js-fundamentals",
+      "title": "Functions ও Conditions",
+      "prereqs": [
+        "les-02-02-arrays-objects"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-02-04-loops-modules",
+      "chapter": "ch-02-js-fundamentals",
+      "title": "Loops, Modules ও Execution Flow",
+      "prereqs": [
+        "les-02-03-functions-conditions"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-02-05-json-async",
+      "chapter": "ch-02-js-fundamentals",
+      "title": "JSON, Async/Await ও Errors",
+      "prereqs": [
+        "les-02-04-loops-modules"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-02-06-debugging",
+      "chapter": "ch-02-js-fundamentals",
+      "title": "Practical Debugging",
+      "prereqs": [
+        "les-02-05-json-async"
+      ],
+      "minutes": 30,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-02-07-project-support-bot",
+      "chapter": "ch-02-js-fundamentals",
+      "title": "প্রজেক্ট: Rule-based Support Assistant",
+      "prereqs": [
+        "les-02-06-debugging",
+        "les-01-08-rule-vs-examples"
+      ],
+      "minutes": 60,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 4,
+      "synthetic": true
+    },
+    {
+      "id": "les-03-01-scalars-vectors",
+      "chapter": "ch-03-math-foundations",
+      "title": "Scalar, Vector ও Dimension",
+      "prereqs": [
+        "les-02-04-loops-modules"
+      ],
+      "minutes": 30,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-03-02-dot-product-similarity",
+      "chapter": "ch-03-math-foundations",
+      "title": "Dot Product, দৈর্ঘ্য ও Cosine Similarity (প্রজেক্ট: Similarity Explorer)",
+      "prereqs": [
+        "les-03-01-scalars-vectors"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 4,
+      "synthetic": true
+    },
+    {
+      "id": "les-03-03-matrices-shapes",
+      "chapter": "ch-03-math-foundations",
+      "title": "Matrix, Shape ও Matrix Multiplication",
+      "prereqs": [
+        "les-03-02-dot-product-similarity"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-03-04-functions-weighted-sums",
+      "chapter": "ch-03-math-foundations",
+      "title": "Function, Graph ও Weighted Sum",
+      "prereqs": [
+        "les-03-03-matrices-shapes"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-03-05-probability",
+      "chapter": "ch-03-math-foundations",
+      "title": "সম্ভাব্যতা, শর্তসাপেক্ষ সম্ভাব্যতা ও Distribution",
+      "prereqs": [
+        "les-03-04-functions-weighted-sums"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-03-06-logs-derivatives",
+      "chapter": "ch-03-math-foundations",
+      "title": "Logarithm ও Derivative",
+      "prereqs": [
+        "les-03-05-probability"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-03-07-gradients-chain-rule",
+      "chapter": "ch-03-math-foundations",
+      "title": "Gradient ও Chain Rule",
+      "prereqs": [
+        "les-03-06-logs-derivatives"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-03-08-gradient-descent",
+      "chapter": "ch-03-math-foundations",
+      "title": "Gradient Descent ও Learning Rate (প্রজেক্ট: Visualizer)",
+      "prereqs": [
+        "les-03-07-gradients-chain-rule"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-04-01-features-data-quality",
+      "chapter": "ch-04-ml-foundations",
+      "title": "Feature, Label ও ডেটার মান",
+      "prereqs": [
+        "les-03-08-gradient-descent",
+        "les-01-04-models-params-data"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-04-02-train-val-test",
+      "chapter": "ch-04-ml-foundations",
+      "title": "Train, Validation ও Test Split",
+      "prereqs": [
+        "les-04-01-features-data-quality"
+      ],
+      "minutes": 30,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-04-03-regression-loss",
+      "chapter": "ch-04-ml-foundations",
+      "title": "Regression, Loss ও Optimization",
+      "prereqs": [
+        "les-04-02-train-val-test"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-04-04-classification-logistic",
+      "chapter": "ch-04-ml-foundations",
+      "title": "Classification, Sigmoid ও Cross-Entropy",
+      "prereqs": [
+        "les-04-03-regression-loss",
+        "les-03-06-logs-derivatives"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-04-05-overfitting-regularization",
+      "chapter": "ch-04-ml-foundations",
+      "title": "Underfitting, Overfitting ও Regularization",
+      "prereqs": [
+        "les-04-04-classification-logistic"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-04-06-metrics",
+      "chapter": "ch-04-ml-foundations",
+      "title": "Accuracy, Precision, Recall ও F1",
+      "prereqs": [
+        "les-04-05-overfitting-regularization"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-04-07-data-leakage",
+      "chapter": "ch-04-ml-foundations",
+      "title": "Data Leakage ও বিভ্রান্তিকর মূল্যায়ন",
+      "prereqs": [
+        "les-04-06-metrics"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-04-08-project-message-classifier",
+      "chapter": "ch-04-ml-foundations",
+      "title": "প্রজেক্ট: গ্রাহক-মেসেজ Classifier",
+      "prereqs": [
+        "les-04-07-data-leakage",
+        "les-02-07-project-support-bot"
+      ],
+      "minutes": 70,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 4,
+      "synthetic": true
+    },
+    {
+      "id": "les-05-01-neuron-activation",
+      "chapter": "ch-05-neural-networks",
+      "title": "Neuron ও Activation Function",
+      "prereqs": [
+        "les-04-08-project-message-classifier",
+        "les-03-04-functions-weighted-sums"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-05-02-layers-forward-pass",
+      "chapter": "ch-05-neural-networks",
+      "title": "Layer, Shape ও Forward Pass",
+      "prereqs": [
+        "les-05-01-neuron-activation",
+        "les-03-03-matrices-shapes"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-05-03-backpropagation",
+      "chapter": "ch-05-neural-networks",
+      "title": "Backpropagation: স্তর ধরে Gradient",
+      "prereqs": [
+        "les-05-02-layers-forward-pass",
+        "les-03-07-gradients-chain-rule"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-05-04-training-xor",
+      "chapter": "ch-05-neural-networks",
+      "title": "Training Loop: XOR শেখানো",
+      "prereqs": [
+        "les-05-03-backpropagation"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-05-05-optimizers",
+      "chapter": "ch-05-neural-networks",
+      "title": "Optimizer: SGD, Momentum ও Adam",
+      "prereqs": [
+        "les-05-04-training-xor"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-05-06-norm-residual-dropout",
+      "chapter": "ch-05-neural-networks",
+      "title": "Normalization, Residual ও Dropout",
+      "prereqs": [
+        "les-05-05-optimizers"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-05-07-project-tiny-network",
+      "chapter": "ch-05-neural-networks",
+      "title": "প্রজেক্ট: ছোট Neural Network, সম্পূর্ণ ট্রেসসহ",
+      "prereqs": [
+        "les-05-06-norm-residual-dropout",
+        "les-04-02-train-val-test"
+      ],
+      "minutes": 70,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-06-01-text-unicode",
+      "chapter": "ch-06-tokens-language-models",
+      "title": "টেক্সট থেকে সংখ্যা: Unicode ও বাংলা অক্ষর",
+      "prereqs": [
+        "les-05-07-project-tiny-network",
+        "les-02-01-values-types"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": false
+    },
+    {
+      "id": "les-06-02-word-char-tokens",
+      "chapter": "ch-06-tokens-language-models",
+      "title": "Word ও Character Token, Vocabulary",
+      "prereqs": [
+        "les-06-01-text-unicode"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-06-03-bpe",
+      "chapter": "ch-06-tokens-language-models",
+      "title": "Subword ও Byte Pair Encoding (BPE)",
+      "prereqs": [
+        "les-06-02-word-char-tokens"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-06-04-bigram-model",
+      "chapter": "ch-06-tokens-language-models",
+      "title": "Next-Token Prediction ও Bigram মডেল",
+      "prereqs": [
+        "les-06-03-bpe",
+        "les-03-05-probability"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-06-05-smoothing-perplexity",
+      "chapter": "ch-06-tokens-language-models",
+      "title": "Smoothing, Cross-Entropy ও Perplexity",
+      "prereqs": [
+        "les-06-04-bigram-model",
+        "les-03-06-logs-derivatives",
+        "les-04-02-train-val-test"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-06-06-project-ngram-predictor",
+      "chapter": "ch-06-tokens-language-models",
+      "title": "প্রজেক্ট: বাংলা-ইংরেজি N-gram Next-Token Predictor",
+      "prereqs": [
+        "les-06-05-smoothing-perplexity"
+      ],
+      "minutes": 70,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-07-01-onehot-embedding",
+      "chapter": "ch-07-embeddings",
+      "title": "One-hot থেকে Embedding Lookup",
+      "prereqs": [
+        "les-06-06-project-ngram-predictor",
+        "les-03-02-dot-product-similarity"
+      ],
+      "minutes": 30,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-07-02-cooccurrence-ppmi",
+      "chapter": "ch-07-embeddings",
+      "title": "প্রসঙ্গ থেকে অর্থ: Co-occurrence ও PPMI",
+      "prereqs": [
+        "les-07-01-onehot-embedding",
+        "les-03-05-probability"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-07-03-skipgram",
+      "chapter": "ch-07-embeddings",
+      "title": "Skip-gram: Embedding শেখা",
+      "prereqs": [
+        "les-07-02-cooccurrence-ppmi",
+        "les-04-08-project-message-classifier"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-07-04-vector-arithmetic-bias",
+      "chapter": "ch-07-embeddings",
+      "title": "Vector গাণিতিক, সীমা ও Bias",
+      "prereqs": [
+        "les-07-03-skipgram"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-07-05-project-semantic-search",
+      "chapter": "ch-07-embeddings",
+      "title": "প্রজেক্ট: Teaching Vector দিয়ে বাংলা পণ্য-সার্চ",
+      "prereqs": [
+        "les-07-04-vector-arithmetic-bias",
+        "les-04-06-metrics"
+      ],
+      "minutes": 70,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-08-01-why-attention",
+      "chapter": "ch-08-attention-transformers",
+      "title": "কেন Attention: প্রসঙ্গ-নির্ভর অর্থ",
+      "prereqs": [
+        "les-07-05-project-semantic-search",
+        "les-03-02-dot-product-similarity"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-08-02-qkv-scaled",
+      "chapter": "ch-08-attention-transformers",
+      "title": "Query, Key, Value ও Scaled Dot-Product",
+      "prereqs": [
+        "les-08-01-why-attention",
+        "les-03-03-matrices-shapes"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-08-03-mask-position",
+      "chapter": "ch-08-attention-transformers",
+      "title": "Causal Mask ও Positional Encoding",
+      "prereqs": [
+        "les-08-02-qkv-scaled"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-08-04-multihead-block",
+      "chapter": "ch-08-attention-transformers",
+      "title": "Multi-Head Attention ও Transformer Block",
+      "prereqs": [
+        "les-08-03-mask-position",
+        "les-05-06-norm-residual-dropout"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-08-05-project-attention-calculator",
+      "chapter": "ch-08-attention-transformers",
+      "title": "প্রজেক্ট: Attention Calculator",
+      "prereqs": [
+        "les-08-04-multihead-block"
+      ],
+      "minutes": 60,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-09-01-pretraining-loss",
+      "chapter": "ch-09-llm-training-generation",
+      "title": "Pretraining: প্রতিটি অবস্থানে Next-Token Loss",
+      "prereqs": [
+        "les-08-05-project-attention-calculator",
+        "les-06-05-smoothing-perplexity"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-09-02-greedy-temperature",
+      "chapter": "ch-09-llm-training-generation",
+      "title": "Greedy ও Temperature Sampling",
+      "prereqs": [
+        "les-09-01-pretraining-loss"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-09-03-topk-topp",
+      "chapter": "ch-09-llm-training-generation",
+      "title": "Top-k ও Top-p (Nucleus) Sampling",
+      "prereqs": [
+        "les-09-02-greedy-temperature"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-09-04-finetune-preference",
+      "chapter": "ch-09-llm-training-generation",
+      "title": "Fine-tuning, Instruction Tuning ও Preference (DPO)",
+      "prereqs": [
+        "les-09-03-topk-topp"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-09-05-hallucination-calibration",
+      "chapter": "ch-09-llm-training-generation",
+      "title": "Hallucination, Calibration ও মূল্যায়ন",
+      "prereqs": [
+        "les-09-04-finetune-preference",
+        "les-04-06-metrics"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-09-06-project-sampling-playground",
+      "chapter": "ch-09-llm-training-generation",
+      "title": "প্রজেক্ট: Sampling Playground",
+      "prereqs": [
+        "les-09-05-hallucination-calibration"
+      ],
+      "minutes": 60,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-10-01-requests-roles-prompts",
+      "chapter": "ch-10-llm-app-engineering",
+      "title": "API Request, Message Role ও Prompt-এর গঠন",
+      "prereqs": [
+        "les-09-06-project-sampling-playground",
+        "les-02-05-json-async"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-10-02-structured-output-schema",
+      "chapter": "ch-10-llm-app-engineering",
+      "title": "Structured Output ও Schema Validation",
+      "prereqs": [
+        "les-10-01-requests-roles-prompts"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-10-03-streaming-timeout-cancel",
+      "chapter": "ch-10-llm-app-engineering",
+      "title": "Streaming, Timeout ও Cancellation",
+      "prereqs": [
+        "les-10-02-structured-output-schema"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-10-04-retries-backoff-rate-limits",
+      "chapter": "ch-10-llm-app-engineering",
+      "title": "Retry, Exponential Backoff, Jitter ও Rate Limit",
+      "prereqs": [
+        "les-10-03-streaming-timeout-cancel"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-10-05-tokens-cost-latency-secrets",
+      "chapter": "ch-10-llm-app-engineering",
+      "title": "Token, খরচ, Latency ও Secret",
+      "prereqs": [
+        "les-10-04-retries-backoff-rate-limits",
+        "les-06-02-word-char-tokens"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 3,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-10-06-validated-tool-calling",
+      "chapter": "ch-10-llm-app-engineering",
+      "title": "যাচাই-করা Tool Calling",
+      "prereqs": [
+        "les-10-05-tokens-cost-latency-secrets"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-10-07-project-classify-draft",
+      "chapter": "ch-10-llm-app-engineering",
+      "title": "প্রজেক্ট: গ্রাহক-বার্তা শ্রেণিবিন্যাস ও উত্তর-খসড়া (স্থানীয় অনুশীলন মোড)",
+      "prereqs": [
+        "les-10-06-validated-tool-calling",
+        "les-04-06-metrics"
+      ],
+      "minutes": 60,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-11-01-documents-chunking",
+      "chapter": "ch-11-rag",
+      "title": "নথি, Chunking ও Metadata",
+      "prereqs": [
+        "les-10-07-project-classify-draft",
+        "les-07-05-project-semantic-search"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-11-02-bm25-keyword",
+      "chapter": "ch-11-rag",
+      "title": "Keyword Search: BM25",
+      "prereqs": [
+        "les-11-01-documents-chunking"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-11-03-vector-hybrid",
+      "chapter": "ch-11-rag",
+      "title": "Vector Search ও Hybrid (RRF)",
+      "prereqs": [
+        "les-11-02-bm25-keyword"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-11-04-rerank-context-citations",
+      "chapter": "ch-11-rag",
+      "title": "Reranking, Context Assembly ও Citation",
+      "prereqs": [
+        "les-11-03-vector-hybrid"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-11-05-updates-access-control",
+      "chapter": "ch-11-rag",
+      "title": "জ্ঞান হালনাগাদ, Access Control ও Tenant Isolation",
+      "prereqs": [
+        "les-11-04-rerank-context-citations"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-11-06-retrieval-vs-answer-eval",
+      "chapter": "ch-11-rag",
+      "title": "Retrieval-মূল্যায়ন বনাম উত্তর-মূল্যায়ন",
+      "prereqs": [
+        "les-11-05-updates-access-control",
+        "les-04-06-metrics"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-11-07-project-product-assistant",
+      "chapter": "ch-11-rag",
+      "title": "প্রজেক্ট: বাংলা পণ্য-জ্ঞান সহকারী",
+      "prereqs": [
+        "les-11-06-retrieval-vs-answer-eval"
+      ],
+      "minutes": 60,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-12-01-workflow-vs-agent",
+      "chapter": "ch-12-workflow-agent-eval",
+      "title": "Workflow বনাম Agent: কখন কোনটি",
+      "prereqs": [
+        "les-11-07-project-product-assistant",
+        "les-10-06-validated-tool-calling"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-12-02-state-memory-orchestration",
+      "chapter": "ch-12-workflow-agent-eval",
+      "title": "Tool, State, Memory ও Orchestration",
+      "prereqs": [
+        "les-12-01-workflow-vs-agent"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-12-03-human-approval",
+      "chapter": "ch-12-workflow-agent-eval",
+      "title": "গুরুত্বপূর্ণ কাজে মানুষের অনুমোদন",
+      "prereqs": [
+        "les-12-02-state-memory-orchestration"
+      ],
+      "minutes": 40,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-12-04-prompt-injection",
+      "chapter": "ch-12-workflow-agent-eval",
+      "title": "Prompt Injection ও অবিশ্বস্ত কনটেন্ট",
+      "prereqs": [
+        "les-12-03-human-approval"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-12-05-regression-monitoring",
+      "chapter": "ch-12-workflow-agent-eval",
+      "title": "কাজ-নির্দিষ্ট ডেটাসেট, Regression Test, ব্যর্থতা-বিশ্লেষণ ও Monitoring",
+      "prereqs": [
+        "les-12-04-prompt-injection",
+        "les-11-06-retrieval-vs-answer-eval"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-12-06-project-ecommerce-assistant",
+      "chapter": "ch-12-workflow-agent-eval",
+      "title": "প্রজেক্ট: সিমুলেটেড ই-কমার্স সহকারী",
+      "prereqs": [
+        "les-12-05-regression-monitoring"
+      ],
+      "minutes": 70,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-13-01-js-to-python-syntax",
+      "chapter": "ch-13-js-to-python-pytorch",
+      "title": "JavaScript থেকে Python: সিনট্যাক্স, list ও dict",
+      "prereqs": [
+        "les-12-06-project-ecommerce-assistant"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 1,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-13-02-functions-classes-modules-env",
+      "chapter": "ch-13-js-to-python-pytorch",
+      "title": "Function, class, module ও virtual environment",
+      "prereqs": [
+        "les-13-01-js-to-python-syntax"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 1,
+      "python": 1,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-13-03-numpy-arrays-broadcasting",
+      "chapter": "ch-13-js-to-python-pytorch",
+      "title": "NumPy array, shape ও broadcasting",
+      "prereqs": [
+        "les-13-02-functions-classes-modules-env"
+      ],
+      "minutes": 45,
+      "required": true,
+      "js": 1,
+      "python": 1,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-13-04-tensors-devices-autograd",
+      "chapter": "ch-13-js-to-python-pytorch",
+      "title": "PyTorch tensor, device ও autograd",
+      "prereqs": [
+        "les-13-03-numpy-arrays-broadcasting",
+        "les-03-07-gradients-chain-rule"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 1,
+      "python": 1,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-13-05-data-training-checkpoints",
+      "chapter": "ch-13-js-to-python-pytorch",
+      "title": "Dataset, DataLoader, training loop ও checkpoint",
+      "prereqs": [
+        "les-13-04-tensors-devices-autograd",
+        "les-04-02-train-val-test"
+      ],
+      "minutes": 50,
+      "required": true,
+      "js": 1,
+      "python": 1,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-13-06-project-circle-pytorch",
+      "chapter": "ch-13-js-to-python-pytorch",
+      "title": "প্রজেক্ট: অধ্যায় ৫-এর নেটওয়ার্ক PyTorch-এ",
+      "prereqs": [
+        "les-13-05-data-training-checkpoints",
+        "les-05-07-project-tiny-network"
+      ],
+      "minutes": 60,
+      "required": true,
+      "js": 1,
+      "python": 1,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-13-07-project-char-lm",
+      "chapter": "ch-13-js-to-python-pytorch",
+      "title": "প্রজেক্ট: ছোট character-level language model",
+      "prereqs": [
+        "les-13-06-project-circle-pytorch",
+        "les-09-01-pretraining-loss"
+      ],
+      "minutes": 70,
+      "required": true,
+      "js": 1,
+      "python": 1,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-14-01-tracks-scope-planning",
+      "chapter": "ch-14-capstones",
+      "title": "দুই ট্র্যাক, সৎ পরিধি ও পরিকল্পনা",
+      "prereqs": [
+        "les-13-07-project-char-lm",
+        "les-12-06-project-ecommerce-assistant"
+      ],
+      "minutes": 35,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-14-02-eng-selection-caching-batching",
+      "chapter": "ch-14-capstones",
+      "title": "Engineering ১: মেপে মডেল বাছাই, caching ও batching",
+      "prereqs": [
+        "les-14-01-tracks-scope-planning",
+        "les-10-05-tokens-cost-latency-secrets"
+      ],
+      "minutes": 55,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-14-03-eng-observability-privacy-reliability",
+      "chapter": "ch-14-capstones",
+      "title": "Engineering ২: observability, privacy, reliability ও multi-tenant",
+      "prereqs": [
+        "les-14-02-eng-selection-caching-batching",
+        "les-12-05-regression-monitoring"
+      ],
+      "minutes": 55,
+      "required": true,
+      "js": 2,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-14-04-capstone-a-knowledge-assistant",
+      "chapter": "ch-14-capstones",
+      "title": "ক্যাপস্টোন A: বাংলা knowledge assistant",
+      "prereqs": [
+        "les-14-03-eng-observability-privacy-reliability",
+        "les-11-07-project-product-assistant"
+      ],
+      "minutes": 120,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-14-05-research-methods-seeds-variance",
+      "chapter": "ch-14-capstones",
+      "title": "Research: প্রশ্ন, baseline, ablation, seed ও variance",
+      "prereqs": [
+        "les-14-01-tracks-scope-planning",
+        "les-13-06-project-circle-pytorch"
+      ],
+      "minutes": 55,
+      "required": true,
+      "js": 1,
+      "python": 0,
+      "quiz": 3,
+      "synthetic": true
+    },
+    {
+      "id": "les-14-06-capstone-b-reproducible-experiment",
+      "chapter": "ch-14-capstones",
+      "title": "ক্যাপস্টোন B: পুনরুৎপাদনযোগ্য ছোট-মডেল পরীক্ষা",
+      "prereqs": [
+        "les-14-05-research-methods-seeds-variance",
+        "les-13-07-project-char-lm"
+      ],
+      "minutes": 120,
+      "required": true,
+      "js": 1,
+      "python": 1,
+      "quiz": 3,
+      "synthetic": true
+    }
+  ]
+}

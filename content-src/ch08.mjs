@@ -1,0 +1,509 @@
+import { p, ul, ol, code, out, note, warn, table, term, SRC } from './lib.mjs';
+
+const chapter = {
+  id: 'ch-08-attention-transformers',
+  slug: 'attention-transformer',
+  title: 'Attention ও Transformer',
+  order: 8,
+  public: false,
+  summary: 'প্রসঙ্গ-নির্ভর অর্থ; attention = similarity-ভিত্তিক weighted average; Q, K, V ও shape; √d দিয়ে scaling; stable softmax; causal mask; positional encoding; multi-head; Transformer block (residual, LayerNorm, feed-forward)।',
+  overview: p(
+    'অধ্যায় ৭-এর embedding প্রসঙ্গ-নিরপেক্ষ: “গলার হার” ও “খেলায় হার”-এ “হার”-এর vector একই। Attention প্রতিটি token-কে বাক্যের অন্য token-গুলো দেখে নিজের vector আপডেট করতে দেয়—কোন token কতটা প্রাসঙ্গিক তা dot product ও softmax ঠিক করে। এই অধ্যায়ে ছোট সংখ্যায় হাতে ও কোডে scaled dot-product attention, causal mask (ভবিষ্যৎ token না দেখা), positional encoding (ক্রমের তথ্য), multi-head attention এবং পূর্ণ Transformer block-এর forward pass করব, প্রতিটি ধাপের shape লিখে।',
+    'প্রজেক্ট: একটি attention calculator যা Q/K/V shape, score, mask, softmax weight ও আউটপুট দেখায় এবং প্রতিটি বৈশিষ্ট্য (সারির যোগফল ১, mask-এ শূন্য, স্থান-অদলবদল) যাচাই করে।'
+  ),
+};
+
+const LIB = String.raw`const r3 = (x) => Math.round(x * 1000) / 1000;
+const matmul = (A, B) => {
+  if (A[0].length !== B.length) throw new Error("shape মেলেনি: " + A.length + "×" + A[0].length + " · " + B.length + "×" + B[0].length);
+  return A.map((row) => B[0].map((_, j) => row.reduce((s, v, k) => s + v * B[k][j], 0)));
+};
+const T = (M) => M[0].map((_, j) => M.map((row) => row[j]));
+const shape = (M) => M.length + "×" + M[0].length;
+function softmaxRow(z) {
+  const m = Math.max(...z);
+  if (m === -Infinity) throw new Error("সব মান -Infinity: softmax অসংজ্ঞায়িত");
+  const e = z.map((v) => Math.exp(v - m));
+  const s = e.reduce((a, b) => a + b, 0);
+  return e.map((v) => v / s);
+}
+const fmt = (M) => M.map((r) => r.map(r3));
+`;
+
+const lessons = [
+  {
+    id: 'les-08-01-why-attention',
+    synthetic: true,
+    slug: 'why-attention',
+    title: 'কেন Attention: প্রসঙ্গ-নির্ভর অর্থ',
+    minutes: 35,
+    prereqs: ['les-07-05-project-semantic-search', 'les-03-02-dot-product-similarity'],
+    summary: 'একই শব্দ ভিন্ন প্রসঙ্গে ভিন্ন অর্থ; attention = অন্য token-গুলোর weighted average; weight = softmax(similarity); হাতে ছোট উদাহরণ।',
+    overview: p('“গলার হার সুন্দর” ও “খেলায় হার হলো”—দুই বাক্যে “হার” আলাদা অর্থ, কিন্তু অধ্যায় ৭-এর embedding-এ একই vector। Attention-এর মূল ধারণা সহজ: প্রতিটি token অন্য সব token-এর সাথে নিজের মিল (dot product) মাপে, softmax দিয়ে সেগুলোকে weight-এ রূপান্তর করে (যোগফল ১), এবং অন্যদের vector-এর weighted average নেয়। “গলার” কাছে থাকলে “হার”-এর নতুন vector গয়নার দিকে সরে; “খেলায়” কাছে থাকলে খেলার দিকে। এই পাঠে Q/K/V ছাড়াই সরলতম রূপটি হাতে ও কোডে করব।'),
+    objectives: ['কেন প্রসঙ্গ-নিরপেক্ষ embedding যথেষ্ট নয় তা উদাহরণসহ বলতে পারবেন', 'similarity → softmax → weighted average—এই তিন ধাপ হাতে হিসাব করতে পারবেন', 'একই শব্দের আউটপুট vector দুই প্রসঙ্গে কীভাবে ভিন্ন হয় তা কোডে দেখাতে পারবেন'],
+    problem: p('সার্চ বক্সে কেউ লিখলেন “হার”। অধ্যায় ৭-এর মডেল গয়না দেখাবে। কিন্তু চ্যাটে “আজ খেলায় হার হলো, মন খারাপ” লিখলে গয়নার বিজ্ঞাপন দেখানো হাস্যকর। শব্দের vector-কে আশেপাশের শব্দ দেখে বদলাতে হবে—কিন্তু কোন শব্দ কতটা প্রভাব ফেলবে, তা কীভাবে ঠিক হবে?'),
+    explain:
+      ol([
+        '<strong>মিল:</strong> token i-এর জন্য প্রতিটি token j-এর score sᵢⱼ = xᵢ · xⱼ।',
+        '<strong>Weight:</strong> aᵢⱼ = softmax(sᵢ)ⱼ—সব j-এর ওপর যোগফল ১, সব ধনাত্মক।',
+        '<strong>আউটপুট:</strong> yᵢ = Σⱼ aᵢⱼ xⱼ—অন্যদের (নিজেসহ) vector-এর weighted average।',
+      ]) +
+      p(`${term('অ্যাটেনশন', 'attention')}: এই তিন ধাপ। আউটপুটের প্রতিটি token-এর vector এখন প্রসঙ্গ-নির্ভর। Transformer-এ এই ধারণাটিই শেখা matrix (Q, K, V—পরের পাঠ) দিয়ে নমনীয় করা হয়।`) +
+      p('<strong>কেন softmax:</strong> weight ধনাত্মক ও যোগফল ১ হলে আউটপুট ইনপুট vector-গুলোর “মাঝামাঝি” কোথাও থাকে—মাপ বিস্ফোরিত হয় না। বড় score-এর token বেশি weight পায়, কিন্তু অন্যরাও একটু পায়।') +
+      note('এখানে vector-গুলো অধ্যায় ৭-এর মতো হাতে-বানানো teaching vector (dimension: [গয়না, খেলা, অনুভূতি])। বাস্তব মডেলে এগুলো শেখা এবং শত শত dimension।'),
+    analogy: {
+      text: 'Attention হলো সভায় একজন সিদ্ধান্ত নেওয়ার আগে উপস্থিত সবার মতামত শোনা, কিন্তু যাঁর বিষয় তাঁর প্রশ্নের সাথে বেশি মেলে তাঁর কথায় বেশি গুরুত্ব দেওয়া।',
+      breaks: 'সভায় মানুষ কারও বিশ্বাসযোগ্যতা বা অভিজ্ঞতা দেখে গুরুত্ব দেন; attention শুধু vector-এর মিল দেখে—এবং “নিজের” মতামতকেও একজন সদস্য হিসেবে গোনে।',
+    },
+    worked:
+      p('বাক্য “গলার হার”: গলার = [১, ০, ০], হার = [০.৫, ০.৫, ০]।') +
+      ol([
+        '“হার”-এর score: গলার-এর সাথে ০.৫, নিজের সাথে ০.২৫ + ০.২৫ = ০.৫।',
+        'softmax([০.৫, ০.৫]) = [০.৫, ০.৫]।',
+        'আউটপুট = ০.৫ × [১, ০, ০] + ০.৫ × [০.৫, ০.৫, ০] = [০.৭৫, ০.২৫, ০]—গয়না-dimension ০.৫ থেকে ০.৭৫-এ বেড়েছে।',
+      ]),
+    activity: note('কোডে simpleAttention ফাংশন, দুই বাক্যে “হার”-এর আউটপুট এবং প্রতিটির attention weight।'),
+    code: [
+      {
+        label: 'সরলতম attention: “হার” দুই প্রসঙ্গে',
+        starter: String.raw`const r3 = (x) => Math.round(x * 1000) / 1000;
+const dot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0);
+function softmax(z) { const m = Math.max(...z); const e = z.map((v) => Math.exp(v - m)); const s = e.reduce((a, b) => a + b, 0); return e.map((v) => v / s); }
+
+// teaching vector: [গয়না, খেলা, অনুভূতি]
+const E = { "গলার": [1, 0, 0], "হার": [0.5, 0.5, 0], "সুন্দর": [0.3, 0, 0.6], "খেলায়": [0, 1, 0], "হলো": [0, 0, 0], "মন": [0, 0, 1], "খারাপ": [0, 0.2, 0.8] };
+
+function simpleAttention(words) {
+  const X = words.map((w) => E[w]);
+  return X.map((xi) => {
+    const a = softmax(X.map((xj) => dot(xi, xj)));
+    const y = xi.map((_, d) => X.reduce((s, xj, j) => s + a[j] * xj[d], 0));
+    return { a, y };
+  });
+}
+for (const sent of [["গলার", "হার", "সুন্দর"], ["খেলায়", "হার", "হলো", "মন", "খারাপ"]]) {
+  const out = simpleAttention(sent);
+  const i = sent.indexOf("হার");
+  console.log(sent.join(" "));
+  console.log("  “হার” আগে:", E["হার"], "→ পরে:", out[i].y.map(r3));
+  console.log("  weight:", sent.map((w, j) => w + "=" + r3(out[i].a[j])).join(" "), "| যোগ =", r3(out[i].a.reduce((a, b) => a + b, 0)));
+}
+const g = simpleAttention(["গলার", "হার"])[1].y;
+console.log("worked “গলার হার”:", g.map(r3));
+`,
+        expect: ['worked “গলার হার”: [0.75,0.25,0]', '“হার” আগে: [0.5,0.5,0] → পরে:', '| যোগ = 1'],
+        hints: ['দুই বাক্যে “হার”-এর পরে-vector তুলনা করুন: কোন dimension বেড়েছে?', '“হলো”-র vector শূন্য—তার score সবসময় ০। তবুও weight কেন ০ নয়?', 'E-তে সব মান ১০ গুণ করুন। weight কেমন হয়? (softmax বড় সংখ্যায় প্রায় one-hot—পরের পাঠে √d)'],
+        test: 'var a=simpleAttention(["গলার","হার","সুন্দর"])[1].y, b=simpleAttention(["খেলায়","হার","হলো","মন","খারাপ"])[1].y; __assert(a[0]>b[0]&&b[1]>a[1],"context shifts meaning"); __close(g[0],0.75,1e-12,"worked");',
+      },
+    ],
+    line: ul([
+      '<code>X.map((xj) => dot(xi, xj))</code>: token i-এর সব token-এর সাথে score।',
+      '<code>softmax</code>: সর্বোচ্চ বাদ দিয়ে স্থিতিশীল (অধ্যায় ৪)।',
+      '<code>X.reduce((s, xj, j) => s + a[j] * xj[d], 0)</code>: dimension d-তে weighted average।',
+    ]),
+    why: p('Q/K/V ছাড়া শুরু করা হয়েছে যাতে মূল ধারণা—“মিল দিয়ে weight, weight দিয়ে গড়”—আলাদা করে দেখা যায়। এই সরল রূপের একটি দুর্বলতা আছে: প্রতিটি token নিজের সাথেই সবচেয়ে বেশি মেলে, তাই নিজেকেই বেশি weight দেয়—শেখা Q ও K এটি সমাধান করে।'),
+    remember: ['attention = মিল → softmax → weighted average', 'weight-এর যোগফল ১', 'আউটপুট প্রসঙ্গ-নির্ভর', 'বড় score-এ softmax প্রায় one-hot'],
+    skip: ['RNN ও তার সীমা (attention-এর আগের ইতিহাস)', 'additive attention'],
+    experiment: p('“গলার হার খেলায়” লিখুন (অর্থহীন বাক্য)। “হার”-এর weight দুই দিকে কীভাবে ভাগ হয়? মডেল কি বুঝতে পারে বাক্যটি অর্থহীন?'),
+    mistakes: ['weight-এর যোগফল ১ যাচাই না করা', 'attention-কে “মডেল বুঝল” অর্থে ব্যাখ্যা', 'অস্থির softmax (max বাদ না দেওয়া)', 'নিজের সাথে মিল বাদ পড়েছে ভাবা'],
+    quiz: [
+      { q: 'score [২, ২]-এর softmax weight?', a: { a: '[১, ০]', b: '[০.৫, ০.৫]', c: '[২, ২]' }, ok: 'b', why: 'সমান score → সমান weight; যোগফল ১।' },
+      { q: 'attention আউটপুট কী?', a: { a: 'সবচেয়ে মেলা token-এর vector', b: 'সব token-এর vector-এর weighted average', c: 'score-এর যোগফল' }, ok: 'b', why: 'softmax weight দিয়ে সব vector মেশানো হয়।' },
+      { q: 'প্রসঙ্গ-নিরপেক্ষ embedding-এর মূল সীমা?', a: { a: 'বড় বলে', b: 'একই শব্দ সব বাক্যে একই vector, অর্থ-ভেদ ধরে না', c: 'ধীর' }, ok: 'b', why: '“হার” গয়না বা পরাজয়—embedding একটিই।' },
+    ],
+    recap: ['প্রসঙ্গ অর্থ বদলায়', 'attention তিন ধাপ', 'weighted average মাপ নিয়ন্ত্রণে রাখে'],
+    nextNote: 'শেখা matrix দিয়ে attention নমনীয় করা—Query, Key, Value:',
+    sources: [SRC.attention, SRC.d2l, ['Alammar — The Illustrated Transformer', 'https://jalammar.github.io/illustrated-transformer/']],
+  },
+  {
+    id: 'les-08-02-qkv-scaled',
+    synthetic: true,
+    slug: 'query-key-value-scaled-attention',
+    title: 'Query, Key, Value ও Scaled Dot-Product',
+    minutes: 45,
+    prereqs: ['les-08-01-why-attention', 'les-03-03-matrices-shapes'],
+    summary: 'Q = XW_Q, K = XW_K, V = XW_V; score = QKᵀ/√d_k; softmax প্রতি সারিতে; আউটপুট = AV; প্রতিটি ধাপের shape; √d কেন—dimension বাড়লে dot product-এর variance বাড়ে।',
+    overview: p('Transformer-এর attention প্রতিটি token-কে তিনটি শেখা ভূমিকা দেয়: Query (“আমি কী খুঁজছি”), Key (“আমি কী দিতে পারি”), Value (“আমি আসলে কী তথ্য পাঠাব”)। ইনপুট X (n × d)-কে তিনটি matrix দিয়ে গুণ করে Q, K, V; তারপর score = QKᵀ / √d_k, প্রতিটি সারিতে softmax, আর আউটপুট = A × V। এই পাঠে n = ৩ token, d = ৪-এ প্রতিটি ধাপের shape ও সংখ্যা দেখব, এবং পরীক্ষা করব কেন √d_k দিয়ে ভাগ না করলে বড় dimension-এ softmax প্রায় one-hot হয়ে যায় (gradient প্রায় শূন্য)।'),
+    objectives: ['Q, K, V, score, weight ও আউটপুটের shape লিখতে পারবেন', 'scaled dot-product attention কোডে হিসাব করতে পারবেন', 'কেন √d_k দিয়ে ভাগ করা হয় তা সংখ্যাগতভাবে দেখাতে পারবেন'],
+    problem: p('আগের পাঠে প্রতিটি token নিজের সাথেই সবচেয়ে বেশি মিলেছে, আর “কী খুঁজছি” ও “কী দিতে পারি” একই vector। ধরুন “হার” শব্দটি চায় তার আগের বিশেষণ খুঁজতে—নিজেকে নয়। আর ৫১২-dimension vector-এর dot product বিশাল হতে পারে; softmax তখন একটিকে ১ আর বাকি সব ০ দেবে। দুটো সমস্যার সমাধান কী?'),
+    explain:
+      table(['ধাপ', 'হিসাব', 'shape (n = ৩, d = ৪, d_k = d_v = ২)'], [
+        ['ইনপুট', 'X', '৩ × ৪'],
+        ['Query/Key/Value', 'Q = XW_Q, K = XW_K, V = XW_V', 'W: ৪ × ২ → Q, K, V: ৩ × ২'],
+        ['Score', 'S = QKᵀ / √d_k', '৩ × ২ · ২ × ৩ = ৩ × ৩'],
+        ['Weight', 'A = softmax(S), প্রতি সারিতে', '৩ × ৩, প্রতি সারির যোগ ১'],
+        ['আউটপুট', 'Y = AV', '৩ × ৩ · ৩ × ২ = ৩ × ২'],
+      ], 'scaled dot-product attention') +
+      p('<strong>কেন আলাদা Q ও K:</strong> W_Q ও W_K ভিন্ন হলে qᵢ · kⱼ প্রতিসম নয়—“হার” “গলার”-কে খুঁজতে পারে, কিন্তু “গলার” “হার”-কে একই মাত্রায় খুঁজতে বাধ্য নয়। নিজের সাথে মিলও আর স্বয়ংক্রিয়ভাবে সর্বোচ্চ নয়।') +
+      p('<strong>কেন V আলাদা:</strong> কাকে দেখব (Q·K) আর কী তথ্য নেব (V) আলাদা শেখা যায়।') +
+      p('<strong>কেন √d_k:</strong> q ও k-এর উপাদানগুলো স্বাধীন, গড় ০ ও variance ১ হলে q · k-এর variance = d_k। d_k = ৬৪-এ standard deviation ৮—score প্রায়ই ±১৬, softmax প্রায় one-hot। √d_k দিয়ে ভাগ করলে variance আবার ১।'),
+    analogy: {
+      text: 'লাইব্রেরিতে আপনার প্রশ্ন (Query) প্রতিটি বইয়ের ক্যাটালগ-কার্ডের (Key) সাথে মেলানো হয়; যত ভালো মিল, সেই বইয়ের বিষয়বস্তু (Value) থেকে তত বেশি নেওয়া হয়।',
+      breaks: 'লাইব্রেরিতে কার্ড আর বই আলাদা জিনিস যা মানুষ লেখে; attention-এ Q, K, V একই token থেকে তিনটি শেখা রূপান্তর—কার্ডে কী লেখা থাকবে তা training ঠিক করে।',
+    },
+    worked:
+      p('d_k = ২, q = [১, ০], k₁ = [১, ০], k₂ = [০, ১], v₁ = [১০, ০], v₂ = [০, ১০]।') +
+      ol([
+        'score = [১, ০] / √২ ≈ [০.৭০৭, ০]।',
+        'softmax ≈ [০.৬৭০, ০.৩৩০]।',
+        'আউটপুট ≈ ০.৬৭ × [১০, ০] + ০.৩৩ × [০, ১০] = [৬.৭০, ৩.৩০]।',
+        '√২ দিয়ে ভাগ না করলে: softmax([১, ০]) ≈ [০.৭৩১, ০.২৬৯]—একটু বেশি তীক্ষ্ণ।',
+      ]),
+    activity: note('কোডে matmul/transpose/softmax সহায়ক, একটি attention ফাংশন যা প্রতিটি ধাপের shape মুদ্রণ করে, এবং d_k বাড়ালে scaled বনাম unscaled softmax-এর সর্বোচ্চ weight।'),
+    code: [
+      {
+        label: 'scaled dot-product attention ও √d পরীক্ষা',
+        starter: String.raw`function makeRng(seed) { let a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+` + LIB + String.raw`
+function attention(X, WQ, WK, WV, log = false) {
+  const Q = matmul(X, WQ), K = matmul(X, WK), V = matmul(X, WV);
+  const dk = K[0].length;
+  const S = matmul(Q, T(K)).map((r) => r.map((v) => v / Math.sqrt(dk)));
+  const A = S.map(softmaxRow);
+  const Y = matmul(A, V);
+  if (log) console.log("shape → X", shape(X), "| Q", shape(Q), "| K", shape(K), "| V", shape(V), "| S", shape(S), "| A", shape(A), "| Y", shape(Y));
+  return { Q, K, V, S, A, Y };
+}
+
+const X = [[1, 0, 1, 0], [0, 1, 0, 1], [1, 1, 0, 0]];   // 3 token, d = 4
+const WQ = [[1, 0], [0, 1], [1, 0], [0, 0]], WK = [[0, 1], [1, 0], [0, 0], [1, 1]], WV = [[1, 0], [0, 1], [1, 1], [0, 0]];
+const r = attention(X, WQ, WK, WV, true);
+console.log("A =", JSON.stringify(fmt(r.A)));
+console.log("সারির যোগ:", r.A.map((row) => r3(row.reduce((a, b) => a + b, 0))));
+console.log("Y =", JSON.stringify(fmt(r.Y)));
+
+// worked উদাহরণ
+const w = softmaxRow([1 / Math.sqrt(2), 0]);
+console.log("worked: weight", w.map(r3), "আউটপুট", [10 * w[0], 10 * w[1]].map(r3));
+
+// d_k বাড়লে: দৈব q, k (গড় 0, variance ~1)
+const rand = makeRng(5), gauss = () => { let s = 0; for (let i = 0; i < 12; i++) s += rand(); return s - 6; };
+for (const dk of [4, 64, 512]) {
+  let maxScaled = 0, maxRaw = 0; const trials = 40;
+  for (let t = 0; t < trials; t++) {
+    const q = Array.from({ length: dk }, gauss), keys = Array.from({ length: 8 }, () => Array.from({ length: dk }, gauss));
+    const raw = keys.map((k) => k.reduce((s, v, i) => s + v * q[i], 0));
+    maxRaw += Math.max(...softmaxRow(raw)) / trials;
+    maxScaled += Math.max(...softmaxRow(raw.map((v) => v / Math.sqrt(dk)))) / trials;
+  }
+  console.log("d_k=" + String(dk).padEnd(4), "গড় সর্বোচ্চ weight (8 key): √d ছাড়া", r3(maxRaw), "| √d দিয়ে", r3(maxScaled));
+}
+`,
+        expect: ['shape → X 3×4 | Q 3×2 | K 3×2 | V 3×2 | S 3×3 | A 3×3 | Y 3×2', 'সারির যোগ: [1,1,1]', 'worked: weight [0.67,0.33] আউটপুট [6.698,3.302]', 'd_k=512'],
+        hints: ['A-এর প্রথম সারি: token ০ কোন token-কে সবচেয়ে বেশি দেখছে? নিজেকে?', 'd_k = 512-এ √d ছাড়া গড় সর্বোচ্চ weight ≈ 0.94—বাকি 7টি key মিলে মাত্র ≈ 0.06। √d দিয়ে ভাগ করলে d_k যাই হোক ≈ 0.3–0.4-এ স্থির। saturate হওয়া softmax-এ gradient-এর কী হয়?', 'gauss(): 12টি uniform যোগ করে 6 বাদ—গড় 0, variance 1-এর কাছাকাছি (central limit-এর একটি পুরনো কৌশল)।'],
+        test: 'r.A.forEach(function(row){ __close(row.reduce(function(a,b){return a+b;},0),1,1e-12,"row sum"); }); __close(w[0],0.6698,1e-3,"worked"); var threw=false; try{ matmul([[1,2]],[[1,2]]); }catch(e){ threw=true; } __assert(threw,"shape check");',
+      },
+    ],
+    line: ul([
+      '<code>matmul</code> শুরুতে shape যাচাই করে—ভুল shape-এ স্পষ্ট বার্তা।',
+      '<code>T(K)</code>: transpose; QKᵀ-এর জন্য।',
+      '<code>S.map(softmaxRow)</code>: প্রতিটি query-র সারিতে আলাদা softmax।',
+      'পরীক্ষা অংশ: একই দৈব score, একবার √d দিয়ে ভাগ করে, একবার ছাড়া—গড় সর্বোচ্চ weight তুলনা।',
+    ]),
+    why: p('W matrix হাতে বাছা হয়েছে (শেখা নয়) যাতে shape ও সংখ্যা অনুসরণ করা যায়। √d পরীক্ষা ৪০টি দৈব নমুনার গড়—একটি নমুনা দেখে “প্রায় one-hot” দাবি করা যেত না।'),
+    remember: ['Q = XW_Q, K = XW_K, V = XW_V', 'A = softmax(QKᵀ/√d_k), প্রতি সারিতে', 'Y = AV; shape n × d_v', '√d_k: score-এর variance স্থির রাখে'],
+    skip: ['attention-এর gradient', 'FlashAttention ও মেমরি-কৌশল'],
+    experiment: p('WK-কে WQ-এর সমান করুন। A-এর diagonal (নিজের সাথে weight) কি এখন বড় হলো? কেন আলাদা Q ও K রাখা কাজের?'),
+    mistakes: ['softmax কলাম ধরে করা (সারি নয়)', '√d_k-এর বদলে d_k দিয়ে ভাগ', 'K-এর transpose ভুলে যাওয়া', 'V-এর shape আউটপুটের shape ঠিক করে—ভুলে যাওয়া'],
+    quiz: [
+      { q: 'n = ১০ token, d_k = ৬৪। QKᵀ-এর shape?', a: { a: '১০ × ৬৪', b: '১০ × ১০', c: '৬৪ × ৬৪' }, ok: 'b', why: '(১০ × ৬৪) · (৬৪ × ১০) = ১০ × ১০—প্রতিটি token জোড়ার একটি score।' },
+      { q: 'd_k = ১০০ হলে score কত দিয়ে ভাগ?', a: { a: '১০০', b: '১০', c: '১' }, ok: 'b', why: '√১০০ = ১০।' },
+      { q: '√d_k ছাড়া বড় dimension-এ কী সমস্যা?', a: { a: 'score খুব ছোট', b: 'score বড়, softmax প্রায় one-hot, gradient প্রায় শূন্য', c: 'shape মেলে না' }, ok: 'b', why: 'dot product-এর variance d_k-এর সমানুপাতে বাড়ে; softmax saturate করে।' },
+    ],
+    recap: ['তিন শেখা ভূমিকা: Q, K, V', 'প্রতিটি ধাপের shape জানুন', '√d_k স্থিতিশীলতার জন্য'],
+    nextNote: 'ভবিষ্যৎ token না দেখা ও ক্রমের তথ্য—causal mask ও position:',
+    sources: [SRC.attention, SRC.d2l],
+  },
+  {
+    id: 'les-08-03-mask-position',
+    synthetic: true,
+    slug: 'causal-mask-positional-encoding',
+    title: 'Causal Mask ও Positional Encoding',
+    minutes: 40,
+    prereqs: ['les-08-02-qkv-scaled'],
+    summary: 'next-token training-এ ভবিষ্যৎ দেখা নিষেধ: j > i হলে score = −∞; positional encoding ছাড়া attention ক্রম জানে না (permutation-equivariant); sinusoidal encoding।',
+    overview: p('GPT-ধরনের মডেল পরের token অনুমান করতে শেখে। training-এ পুরো বাক্য একসাথে দেওয়া হয়, তাই কোনো নিয়ম না থাকলে token i পরের token-গুলো দেখে “উত্তর দেখে ফেলবে”—অধ্যায় ৪-এর leakage। Causal mask এটি ঠেকায়: j > i হলে score = −∞, তাই softmax-এ weight ঠিক ০। দ্বিতীয় সমস্যা: attention নিজে ক্রম জানে না—token-গুলোর স্থান অদলবদল করলে আউটপুটও শুধু অদলবদল হয়। “কুকুর মানুষকে কামড়াল” ও “মানুষ কুকুরকে কামড়াল” আলাদা করতে position-এর তথ্য যোগ করতে হয়। এই পাঠে দুটোই কোডে প্রমাণ করব।'),
+    objectives: ['causal mask প্রয়োগ করে weight-এর উপরের ত্রিভুজ শূন্য দেখাতে পারবেন', 'position ছাড়া attention যে স্থান-অদলবদলে সমতুল্য তা কোডে দেখাতে পারবেন', 'sinusoidal positional encoding হিসাব করে ইনপুটে যোগ করতে পারবেন'],
+    problem: p('training বাক্য: “ঢাকায় ডেলিভারি চার্জ কত”। token ২ (“চার্জ”)-এর কাজ token ৩ (“কত”) অনুমান করা। attention যদি “কত”-কে দেখতে পায়, অনুমান নিখুঁত হবে training-এ—কিন্তু generation-এর সময় ভবিষ্যৎ token থাকে না। আর “চার্জ কত ডেলিভারি ঢাকায়” লিখলে মডেল কি আদৌ পার্থক্য বুঝবে?'),
+    explain:
+      p(`${term('কজাল মাস্ক', 'causal mask')}: score matrix-এ j > i ঘরগুলো −∞। softmax-এ e^(−∞) = ০, তাই weight ০। ফলে A একটি নিম্ন-ত্রিভুজাকার matrix: token ০ শুধু নিজেকে, token ১ নিজেকে ও ০-কে দেখে…`) +
+      p('<strong>padding mask:</strong> batch-এ ছোট বাক্য &lt;pad&gt; দিয়ে লম্বা করা হলে pad token-এর key-গুলোও −∞ করা হয়। পুরো সারি mask হলে softmax অসংজ্ঞায়িত—কোডে স্পষ্ট এরর দেব।') +
+      p(`${term('পারমিউটেশন-ইকুইভ্যারিয়েন্ট', 'permutation-equivariant')}: mask ও position ছাড়া, ইনপুটের সারি অদলবদল করলে আউটপুটের সারিও একইভাবে অদলবদল হয়—মানে প্রতিটি token-এর আউটপুট ক্রমের ওপর নির্ভর করে না।`) +
+      p(`${term('পজিশনাল এনকোডিং', 'positional encoding')} (মূল Transformer): PE(pos, ২i) = sin(pos / ১০০০০^(২i/d)), PE(pos, ২i+১) = cos(pos / ১০০০০^(২i/d))। প্রতিটি অবস্থানে একটি অনন্য vector, embedding-এর সাথে যোগ করা হয়। অনেক আধুনিক মডেল শেখা বা আপেক্ষিক (যেমন rotary) position ব্যবহার করে—ধারণা একই: ক্রমের তথ্য ইনপুটে ঢোকানো।`),
+    analogy: {
+      text: 'Causal mask হলো পরীক্ষার খাতায় উত্তর লেখার সময় পরের পৃষ্ঠাগুলো কাগজ দিয়ে ঢেকে রাখা। Positional encoding হলো প্রতিটি পৃষ্ঠায় পৃষ্ঠা-নম্বর লেখা—না থাকলে পাতাগুলো এলোমেলো হলে বোঝা যায় না।',
+      breaks: 'কাগজ সরিয়ে ফেলা যায়; mask গাণিতিকভাবে weight ঠিক ০ করে—“একটু উঁকি” সম্ভব নয়। পৃষ্ঠা-নম্বর আলাদা লেখা থাকে; positional encoding embedding-এর সাথে যোগ হয়ে মিশে যায়।',
+    },
+    worked:
+      p('৩ token, সব score = ০ (mask-এর প্রভাব আলাদা করে দেখতে)।') +
+      ol([
+        'mask ছাড়া: প্রতিটি সারি [১/৩, ১/৩, ১/৩]।',
+        'mask: সারি ০ = [০, −∞, −∞] → [১, ০, ০]; সারি ১ = [০, ০, −∞] → [০.৫, ০.৫, ০]; সারি ২ → [১/৩, ১/৩, ১/৩]।',
+        'PE(pos = ১, d = ৪): [sin(১), cos(১), sin(১/১০০), cos(১/১০০)] ≈ [০.৮৪১, ০.৫৪০, ০.০১০, ১.০০০]।',
+      ]),
+    activity: note('কোডে mask-সহ attention, উপরের ত্রিভুজ ০ যাচাই, সারি অদলবদল পরীক্ষা (position ছাড়া ও সহ), এবং sinusoidal PE।'),
+    code: [
+      {
+        label: 'causal mask, permutation পরীক্ষা ও positional encoding',
+        starter: LIB + String.raw`
+function attention(X, WQ, WK, WV, causal = false) {
+  const Q = matmul(X, WQ), K = matmul(X, WK), V = matmul(X, WV), dk = K[0].length;
+  let S = matmul(Q, T(K)).map((r) => r.map((v) => v / Math.sqrt(dk)));
+  if (causal) S = S.map((r, i) => r.map((v, j) => (j > i ? -Infinity : v)));
+  const A = S.map(softmaxRow);
+  return { A, Y: matmul(A, V) };
+}
+function posEnc(n, d) {
+  return Array.from({ length: n }, (_, pos) => Array.from({ length: d }, (_, k) => {
+    const i = Math.floor(k / 2), angle = pos / Math.pow(10000, (2 * i) / d);
+    return k % 2 === 0 ? Math.sin(angle) : Math.cos(angle);
+  }));
+}
+const add = (A, B) => A.map((r, i) => r.map((v, j) => v + B[i][j]));
+
+const I2 = [[1, 0], [0, 1], [0, 0], [0, 0]], WV = [[1, 0], [0, 1], [1, 0], [0, 1]];
+const X = [[1, 0, 0, 1], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 1, 1]];   // 4 token
+
+const m = attention(X, I2, I2, WV, true);
+console.log("causal A =", JSON.stringify(fmt(m.A)));
+const upperZero = m.A.every((r, i) => r.every((v, j) => j <= i || v === 0));
+console.log("উপরের ত্রিভুজ সব 0?", upperZero, "| সারির যোগ:", m.A.map((r) => r3(r.reduce((a, b) => a + b, 0))));
+
+// permutation: সারি উল্টে দিলে (mask ও position ছাড়া)
+const perm = [3, 2, 1, 0];
+const sameRows = (A, B) => A.every((r, i) => r.every((v, j) => Math.abs(v - B[i][j]) < 1e-12));
+const Y = attention(X, I2, I2, WV).Y, Yp = attention(perm.map((i) => X[i]), I2, I2, WV).Y;
+console.log("position ছাড়া: উল্টানো ইনপুটের আউটপুট = আসল আউটপুটের উল্টো?", sameRows(Yp, perm.map((i) => Y[i])));
+
+const PE = posEnc(4, 4);
+console.log("PE[1] =", PE[1].map(r3));
+const Z = add(X, PE), Zp = add(perm.map((i) => X[i]), PE);
+const Y2 = attention(Z, I2, I2, WV).Y, Y2p = attention(Zp, I2, I2, WV).Y;
+console.log("position সহ: একই সম্পর্ক টিকে থাকে?", sameRows(Y2p, perm.map((i) => Y2[i])));
+
+try { softmaxRow([-Infinity, -Infinity]); } catch (e) { console.log("পুরো সারি mask →", e.message); }
+`,
+        expect: ['উপরের ত্রিভুজ সব 0? true | সারির যোগ: [1,1,1,1]', 'position ছাড়া: উল্টানো ইনপুটের আউটপুট = আসল আউটপুটের উল্টো? true', 'PE[1] = [0.841,0.54,0.01,1]', 'position সহ: একই সম্পর্ক টিকে থাকে? false', 'পুরো সারি mask → সব মান -Infinity: softmax অসংজ্ঞায়িত'],
+        hints: ['causal A-এর প্রথম সারি কেন [1, 0, 0, 0]? token 0-এর দেখার মতো আর কেউ নেই।', '“position ছাড়া … true” মানে: attention শব্দক্রমে উদাসীন। position যোগ করার পর false—এখন ক্রম আউটপুট বদলায়।', 'posEnc(50, 4)-এর pos 0 ও pos 49 তুলনা করুন—dimension 2-3 খুব ধীরে বদলায় কেন?'],
+        test: '__assert(upperZero,"mask"); __assert(sameRows(Yp,perm.map(function(i){return Y[i];})),"equivariant"); __assert(!sameRows(Y2p,perm.map(function(i){return Y2[i];})),"pos breaks"); __close(PE[1][0],Math.sin(1),1e-12,"pe");',
+      },
+    ],
+    line: ul([
+      '<code>j > i ? -Infinity : v</code>: ভবিষ্যৎ ঘর −∞; softmax-এ <code>Math.exp(-Infinity) = 0</code>।',
+      '<code>upperZero</code>: প্রতিটি j > i ঘর হুবহু ০—“প্রায় ০” নয়।',
+      '<code>perm.map((i) => X[i])</code>: সারির ক্রম উল্টানো।',
+      '<code>posEnc</code>: জোড় dimension-এ sin, বিজোড়ে cos; i বাড়লে তরঙ্গ ধীর।',
+      'position যোগ করার পর একই পরীক্ষা false—ক্রম এখন গুরুত্বপূর্ণ।',
+    ]),
+    why: p('“position ছাড়া ক্রম উপেক্ষিত” দাবিটি একটি বাক্য-উদাহরণ দিয়ে নয়, সাধারণ বৈশিষ্ট্য (permutation-equivariance) হিসেবে যাচাই করা হয়েছে—যেকোনো ইনপুট ও অদলবদলে সত্য। পুরো-সারি mask-এর এরর স্পষ্ট বার্তায় রাখা হয়েছে, কারণ চুপচাপ NaN হলে বাগ খুঁজে পাওয়া কঠিন।'),
+    remember: ['causal mask: j > i → −∞ → weight ০', 'mask = training-এ leakage প্রতিরোধ', 'position ছাড়া attention ক্রম জানে না', 'positional encoding embedding-এ যোগ হয়'],
+    skip: ['rotary (RoPE) ও ALiBi-এর বিস্তারিত', 'KV cache (inference-এ আগের K, V সংরক্ষণ)'],
+    experiment: p('causal mask চালু রেখে permutation পরীক্ষা চালান (position ছাড়া)। এখনও true আসে? কেন mask নিজেই কিছুটা ক্রমের তথ্য দেয়?'),
+    mistakes: ['mask-এ −∞-এর বদলে ০ বসানো (০ score-এরও weight আছে)', 'softmax-এর পরে mask প্রয়োগ (যোগফল ১ থাকে না)', 'position encoding ভুলে যাওয়া', 'পুরো সারি mask হলে NaN উপেক্ষা'],
+    quiz: [
+      { q: 'causal mask-এ token ২ (০-ভিত্তিক) কোন token-গুলো দেখে?', a: { a: 'শুধু ২', b: '০, ১, ২', c: 'সব' }, ok: 'b', why: 'j ≤ i অবস্থানগুলো—নিজে ও আগের সব।' },
+      { q: 'mask করা ঘরে score ০ বসালে কী হয়?', a: { a: 'weight ০', b: 'weight ০ নয়—e⁰ = ১, তাই ভবিষ্যৎ token-ও weight পায়', c: 'এরর' }, ok: 'b', why: 'শুধু −∞ softmax-এ ঠিক ০ দেয়।' },
+      { q: 'positional encoding কেন দরকার?', a: { a: 'গতি বাড়াতে', b: 'attention নিজে token-এর ক্রম জানে না', c: 'softmax-এর জন্য' }, ok: 'b', why: 'position ছাড়া attention শব্দের ঝুলির মতো আচরণ করে।' },
+    ],
+    recap: ['mask ভবিষ্যৎ ঢাকে', 'position ক্রম জানায়', 'দুটোই কোডে যাচাইযোগ্য বৈশিষ্ট্য'],
+    nextNote: 'একাধিক attention একসাথে ও পূর্ণ Transformer block:',
+    sources: [SRC.attention, SRC.gpt2, ['Su et al. — RoFormer: Rotary Position Embedding (2021)', 'https://arxiv.org/abs/2104.09864']],
+  },
+  {
+    id: 'les-08-04-multihead-block',
+    synthetic: true,
+    slug: 'multi-head-transformer-block',
+    title: 'Multi-Head Attention ও Transformer Block',
+    minutes: 50,
+    prereqs: ['les-08-03-mask-position', 'les-05-06-norm-residual-dropout'],
+    summary: 'h টি head, প্রতিটি d/h dimension; concat ও W_O; block = LayerNorm → attention → residual → LayerNorm → feed-forward → residual; parameter গণনা; GPT-2 small-এর আকারের সাথে মিল।',
+    overview: p('একটি attention head একটি ধরনের সম্পর্ক ধরে (যেমন “আগের বিশেষণ”)। Multi-head attention h টি ছোট head সমান্তরালে চালায়, প্রতিটির নিজস্ব W_Q, W_K, W_V (dimension d/h), তারপর আউটপুটগুলো পাশাপাশি জুড়ে (concat) একটি W_O দিয়ে গুণ করে। Transformer block-এ এর পরে একটি দুই-স্তরের feed-forward নেটওয়ার্ক (প্রতিটি token আলাদাভাবে), প্রতিটির আগে LayerNorm ও পরে residual (অধ্যায় ৫)। এই পাঠে ছোট মাপে একটি পূর্ণ block-এর forward pass চালাব এবং parameter সূত্র দিয়ে GPT-2 small-এর প্রকাশিত আকার (প্রায় ১২.৪ কোটি) পুনরুৎপাদন করব।'),
+    objectives: ['multi-head attention-এর split, concat ও W_O-এর shape লিখতে পারবেন', 'pre-norm Transformer block-এর forward pass কোডে চালাতে পারবেন', 'একটি block ও পূর্ণ মডেলের parameter সংখ্যা সূত্র দিয়ে হিসাব করতে পারবেন'],
+    problem: p('একটি বাক্যে “হার” একই সাথে আগের শব্দ (“গলার”) থেকে অর্থ নিতে চায় এবং পরের ক্রিয়া কোন বিশেষ্যের সাথে মেলে তা-ও জানতে চায়। একটি head-এর একটি weight-বণ্টন দুটো কাজ একসাথে ভালোভাবে করতে পারে না। আর “GPT-2 small-এ ১২.৪ কোটি parameter”—এই সংখ্যা কোথা থেকে আসে?'),
+    explain:
+      table(['অংশ', 'হিসাব', 'shape (n token, d, h head)'], [
+        ['প্রতিটি head', 'attention(X W_Qʰ, X W_Kʰ, X W_Vʰ)', 'W: d × d/h → আউটপুট n × d/h'],
+        ['Concat', 'সব head পাশাপাশি', 'n × d'],
+        ['আউটপুট প্রক্ষেপ', '× W_O', 'd × d → n × d'],
+        ['Feed-forward', 'ReLU/GELU(X W₁ + b₁) W₂ + b₂', 'W₁: d × ৪d, W₂: ৪d × d'],
+      ], 'multi-head ও FFN') +
+      p('<strong>Pre-norm block (GPT-2 ধরন):</strong> h = x + MHA(LN(x)); y = h + FFN(LN(h))। residual-এর কারণে প্রতিটি অংশ শুধু একটি “সংশোধন” যোগ করে।') +
+      p('<strong>Parameter প্রতি block:</strong> attention: ৪d² + ৪d (W_Q, W_K, W_V, W_O ও তাদের bias); FFN: ৮d² + ৫d (d × ৪d + ৪d, ৪d × d + d); দুটি LayerNorm: ৪d। মোট ≈ ১২d² + ১৩d।') +
+      p('<strong>পূর্ণ মডেল:</strong> token embedding V × d + position embedding n_ctx × d + L × block + শেষ LayerNorm ২d। GPT-2 small: V = ৫০,২৫৭, n_ctx = ১,০২৪, d = ৭৬৮, L = ১২। output স্তর token embedding-এর সাথে ভাগ করা (weight tying), তাই আলাদা গোনা হয় না।') +
+      note('মাথাগুলো “একটি গয়না-head, একটি ব্যাকরণ-head” এমন পরিষ্কার ভাগ সবসময় শেখে না। কিছু head-এর আচরণ ব্যাখ্যাযোগ্য পাওয়া গেছে, অনেকগুলোর নয়—head-কে মানুষ-পাঠযোগ্য দক্ষতা ধরে নেবেন না।'),
+    analogy: {
+      text: 'Multi-head হলো একই লেখা কয়েকজন সম্পাদক একসাথে পড়া—একজন বানান দেখেন, একজন তথ্য, একজন ভাষার ধরন—তারপর সব মন্তব্য একত্র করা (W_O)।',
+      breaks: 'সম্পাদকদের দায়িত্ব আগে থেকে ভাগ করা; head-গুলোর ভূমিকা কেউ ঠিক করে দেয় না—training-এ যা loss কমায় তাই শেখে, এবং প্রায়ই একাধিক head একই রকম কাজ করে।',
+    },
+    worked:
+      p('d = ৭৬৮-এ একটি block-এর parameter:') +
+      ol([
+        'attention: ৪ × ৭৬৮² + ৪ × ৭৬৮ = ২৩,৫৯,২৯৬ + ৩,০৭২ = ২৩,৬২,৩৬৮।',
+        'FFN: ৮ × ৭৬৮² + ৫ × ৭৬৮ = ৪৭,১৮,৫৯২ + ৩,৮৪০ = ৪৭,২২,৪৩২।',
+        'LayerNorm × ২: ৪ × ৭৬৮ = ৩,০৭২। মোট প্রতি block = ৭০,৮৭,৮৭২।',
+        '১২ block = ৮,৫০,৫৪,৪৬৪; embedding = ৫০,২৫৭ × ৭৬৮ + ১,০২৪ × ৭৬৮ = ৩,৯৩,৮৪,৯৬০; শেষ LN = ১,৫৩৬। মোট = ১২,৪৪,৩৯,৮০৮ ≈ ১২.৪ কোটি।',
+      ]),
+    activity: note('কোডে দুই-head multi-head attention, pre-norm block-এর forward (d = ৪, n = ৩), shape যাচাই, এবং parameter সূত্র দিয়ে GPT-2 small-এর মোট।'),
+    code: [
+      {
+        label: 'multi-head attention, Transformer block ও parameter গণনা',
+        starter: String.raw`function makeRng(seed) { let a = seed >>> 0; return function () { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+` + LIB + String.raw`
+const rand = makeRng(8), randM = (r, c) => Array.from({ length: r }, () => Array.from({ length: c }, () => (rand() - 0.5)));
+const addM = (A, B) => A.map((r, i) => r.map((v, j) => v + B[i][j]));
+const layerNorm = (X) => X.map((x) => { const m = x.reduce((a, b) => a + b, 0) / x.length; const v = x.reduce((s, t) => s + (t - m) ** 2, 0) / x.length; return x.map((t) => (t - m) / Math.sqrt(v + 1e-5)); });
+
+function head(X, W, causal) {
+  const Q = matmul(X, W.q), K = matmul(X, W.k), V = matmul(X, W.v), dk = K[0].length;
+  const S = matmul(Q, T(K)).map((r, i) => r.map((v, j) => (causal && j > i ? -Infinity : v / Math.sqrt(dk))));
+  return matmul(S.map(softmaxRow), V);
+}
+function multiHead(X, P, causal = true) {
+  const outs = P.heads.map((W) => head(X, W, causal));                   // প্রতিটি n × d/h
+  const concat = X.map((_, i) => outs.flatMap((o) => o[i]));             // n × d
+  return { outs, concat, Y: matmul(concat, P.WO) };
+}
+const ffn = (X, P) => matmul(matmul(X, P.W1).map((r) => r.map((v) => Math.max(0, v))), P.W2);
+function block(x, P) {
+  const a = multiHead(layerNorm(x), P);
+  const h = addM(x, a.Y);
+  return { a, h, y: addM(h, ffn(layerNorm(h), P)) };
+}
+
+const d = 4, H = 2, n = 3;
+const P = { heads: Array.from({ length: H }, () => ({ q: randM(d, d / H), k: randM(d, d / H), v: randM(d, d / H) })), WO: randM(d, d), W1: randM(d, 4 * d), W2: randM(4 * d, d) };
+const X = randM(n, d);
+const out = block(X, P);
+console.log("head আউটপুট:", out.a.outs.map(shape).join(", "), "| concat:", shape(out.a.concat), "| block আউটপুট:", shape(out.y));
+console.log("y[0] =", out.y[0].map(r3));
+
+// parameter সূত্র (bias সহ)
+const perBlock = (d) => (4 * d * d + 4 * d) + (8 * d * d + 5 * d) + 4 * d;
+const total = ({ V, nctx, d, L }) => V * d + nctx * d + L * perBlock(d) + 2 * d;
+const gpt2small = { V: 50257, nctx: 1024, d: 768, L: 12 };
+console.log("প্রতি block (d=768):", perBlock(768), "| GPT-2 small মোট:", total(gpt2small));
+`,
+        expect: ['head আউটপুট: 3×2, 3×2 | concat: 3×4 | block আউটপুট: 3×4', 'প্রতি block (d=768): 7087872 | GPT-2 small মোট: 124439808'],
+        hints: ['concat-এর shape d/h × h = d—তাই multi-head-এর মোট খরচ একটি বড় head-এর মতোই।', 'GPT-2 medium: d = 1024, L = 24। total() দিয়ে হিসাব করুন—প্রকাশিত আকার প্রায় ৩৫.৫ কোটি।', 'block-এ residual (addM) মুছে দিন—y কীভাবে বদলায়?'],
+        test: '__assert(total(gpt2small)===124439808,"gpt2 small"); __assert(shape(out.y)===shape(X),"block preserves shape"); __assert(out.y.every(function(r){return r.every(isFinite);}),"finite");',
+      },
+    ],
+    line: ul([
+      '<code>head</code>: আগের পাঠের attention, causal mask সহ।',
+      '<code>outs.flatMap((o) => o[i])</code>: token i-এর জন্য সব head-এর আউটপুট পাশাপাশি।',
+      '<code>ffn</code>: d → ৪d → d, মাঝে ReLU (GPT-2-এ GELU)।',
+      '<code>block</code>: pre-norm—LayerNorm আগে, residual পরে।',
+      '<code>perBlock</code>: ১২d² + ১৩d; <code>total</code>: embedding + block + শেষ LN।',
+    ]),
+    why: p('ছোট block-এর weight দৈব (seed ৮)—সংখ্যাগুলোর কোনো অর্থ নেই; উদ্দেশ্য shape ও তথ্য-প্রবাহ দেখানো। parameter সূত্র প্রকাশিত মডেলের আকারের সাথে মেলানো হয়েছে যাতে সূত্রটি বিশ্বাসযোগ্য হয়—এক মিলিয়ন-এর পার্থক্যও থাকলে কোনো অংশ বাদ পড়েছে বোঝা যেত।'),
+    remember: ['h head, প্রতিটি d/h; concat → W_O', 'block: LN → MHA → residual → LN → FFN → residual', 'প্রতি block ≈ ১২d²', 'block ইনপুট-আউটপুটের shape একই—তাই স্তূপ করা যায়'],
+    skip: ['GELU-এর সূত্র', 'mixture-of-experts', 'grouped-query attention'],
+    experiment: p('total() দিয়ে d = ৭৬৮, L = ১২ রেখে V = ১,০০,০০০ করুন। মোট কতটা বাড়ে? বড় vocabulary-র খরচ কোথায়?'),
+    mistakes: ['d কে h দিয়ে বিভাজ্য না রাখা', 'concat-এর ক্রম গুলিয়ে ফেলা', 'weight tying ভুলে output স্তর দুবার গোনা', 'head-এর ভূমিকা মানুষ-পাঠযোগ্য ধরে নেওয়া'],
+    quiz: [
+      { q: 'd = ৫১২, h = ৮। প্রতিটি head-এর dimension?', a: { a: '৫১২', b: '৬৪', c: '৮' }, ok: 'b', why: '৫১২ / ৮ = ৬৪।' },
+      { q: 'd = ১০০ হলে FFN-এর মাঝের স্তরের আকার (প্রচলিত)?', a: { a: '১০০', b: '৪০০', c: '২৫' }, ok: 'b', why: 'প্রচলিত গুণক ৪ × d।' },
+      { q: 'Transformer block-এর আউটপুটের shape ইনপুটের সমান কেন গুরুত্বপূর্ণ?', a: { a: 'গতির জন্য', b: 'residual যোগ করা যায় এবং একই block বারবার স্তূপ করা যায়', c: 'দরকার নেই' }, ok: 'b', why: 'x + f(x)-এর জন্য shape মিলতে হয়, আর L টি block পরপর বসানো যায়।' },
+    ],
+    recap: ['multi-head = সমান্তরাল ছোট attention', 'pre-norm block কাঠামো', 'parameter সূত্রে প্রকাশিত আকার মেলে'],
+    nextNote: 'সব একসাথে—attention calculator প্রজেক্ট:',
+    sources: [SRC.attention, SRC.gpt2, SRC.layernorm, ['Karpathy — nanoGPT (model.py)', 'https://github.com/karpathy/nanoGPT']],
+  },
+  {
+    id: 'les-08-05-project-attention-calculator',
+    synthetic: true,
+    slug: 'project-attention-calculator',
+    title: 'প্রজেক্ট: Attention Calculator',
+    minutes: 60,
+    prereqs: ['les-08-04-multihead-block'],
+    summary: 'যেকোনো token তালিকা, embedding ও W-এর জন্য Q/K/V shape, score, mask, softmax weight টেবিল, ASCII heat map ও আউটপুট; স্বয়ংক্রিয় বৈশিষ্ট্য-পরীক্ষা: সারির যোগ ১, mask-এ শূন্য, বড় score-এ স্থিতিশীল, shape এরর।',
+    overview: p('এই প্রজেক্টে একটি পুনঃব্যবহারযোগ্য attention calculator বানাব। ইনপুট: token তালিকা, প্রতিটির embedding, W_Q, W_K, W_V, mask চালু/বন্ধ। আউটপুট: প্রতিটি ধাপের shape, score matrix, mask-এর পরের matrix, softmax weight টেবিল (token নামসহ), একটি ASCII heat map, এবং আউটপুট vector। তারপর calculator নিজেই চারটি বৈশিষ্ট্য যাচাই করে: প্রতিটি সারির যোগফল ১, mask করা ঘর ঠিক ০, বিশাল score (১০০০)-এও NaN নেই, এবং ভুল shape-এ স্পষ্ট এরর। এগুলো যেকোনো attention implementation-এর জন্য একটি ছোট test suite।'),
+    objectives: ['attention-এর প্রতিটি মধ্যবর্তী ধাপ পাঠযোগ্যভাবে দেখাতে পারবেন', 'attention implementation-এর জন্য বৈশিষ্ট্য-ভিত্তিক পরীক্ষা লিখতে পারবেন', 'weight টেবিল পড়ে কোন token কাকে দেখছে ব্যাখ্যা করতে পারবেন'],
+    problem: p('একটি লাইব্রেরি থেকে attention কোড নিলেন, ফল “ঠিক দেখাচ্ছে”। কিন্তু কীভাবে নিশ্চিত হবেন mask সত্যিই ভবিষ্যৎ ঢাকছে, বড় সংখ্যায় NaN হচ্ছে না, আর shape ভুল হলে চুপচাপ ভুল ফল আসছে না? একটি একক উদাহরণের আউটপুট দেখে এগুলো প্রমাণ হয় না—বৈশিষ্ট্য পরীক্ষা লাগে।'),
+    explain:
+      p('<strong>Calculator-এর ইন্টারফেস:</strong> <code>calc({ tokens, X, WQ, WK, WV, causal })</code> → { Q, K, V, S, Smasked, A, Y }। প্রতিটি ধাপ ফেরত দেওয়া হয় যাতে পরীক্ষা ও প্রদর্শন দুটোই সম্ভব।') +
+      table(['বৈশিষ্ট্য', 'কেন', 'কীভাবে যাচাই'], [
+        ['সারির যোগ = ১', 'softmax-এর সংজ্ঞা', '|Σⱼ Aᵢⱼ − ১| < ১০⁻¹²'],
+        ['mask-এ ঠিক ০', 'ভবিষ্যৎ leakage নেই', 'j > i ঘর === ০'],
+        ['বড় score-এ স্থিতিশীল', 'max বাদ না দিলে e^১০০০ = Infinity', 'score ১০০০ দিয়ে চালিয়ে isFinite'],
+        ['shape এরর', 'চুপচাপ ভুল ফল ঠেকানো', 'ভুল W দিয়ে চালালে exception'],
+      ], 'calculator-এর স্বয়ংক্রিয় পরীক্ষা') +
+      p('<strong>ASCII heat map:</strong> প্রতিটি weight-কে একটি অক্ষরে: “ ” (< ০.০৫), “.” (< ০.২), “o” (< ০.৪), “O” (< ০.৬), “@” (≥ ০.৬)। স্ক্রিন রিডারের জন্য সংখ্যার টেবিলও থাকে।') +
+      note('উদাহরণের embedding ও W হাতে বাছা teaching মান। বাস্তব মডেলের attention weight দেখে “মডেল কেন এই সিদ্ধান্ত নিল” ব্যাখ্যা করা বিতর্কিত—attention weight সবসময় মডেলের যুক্তির বিশ্বস্ত ব্যাখ্যা নয় (সূত্র দেখুন)।'),
+    analogy: {
+      text: 'Calculator হলো একটি স্বচ্ছ ঘড়ি যার ভেতরের প্রতিটি চাকা দেখা যায়, সাথে একটি চেকলিস্ট যা প্রতিবার চালানোর পর নিশ্চিত করে কোনো চাকা উল্টো ঘুরছে না।',
+      breaks: 'ঘড়ির চাকা দেখে সময় কেন এমন তা পুরোপুরি বোঝা যায়; attention weight দেখে মডেলের “কারণ” পুরোপুরি বোঝা যায় না—শুধু একটি স্তরের একটি অংশ দেখা যায়।',
+    },
+    worked:
+      p('heat map পড়া: সারি = কে দেখছে (query), কলাম = কাকে দেখছে (key)। causal-এ উপরের ডান ত্রিভুজ ফাঁকা। শেষ সারি সবচেয়ে বেশি প্রসঙ্গ দেখে।'),
+    activity: p('<strong>প্রজেক্ট মানদণ্ড:</strong> (১) “গলার সোনার হার সুন্দর” বাক্যে weight টেবিল ও heat map, (২) চারটি বৈশিষ্ট্য-পরীক্ষার পাস/ফেল রিপোর্ট, (৩) causal বন্ধ করে টেবিল তুলনা, (৪) “হার” কাকে সবচেয়ে বেশি দেখছে এবং কেন (teaching vector থেকে ব্যাখ্যা)।'),
+    code: [
+      {
+        label: 'প্রজেক্ট: attention calculator ও বৈশিষ্ট্য-পরীক্ষা',
+        starter: LIB + String.raw`
+function calc({ tokens, X, WQ, WK, WV, causal = true }) {
+  if (tokens.length !== X.length) throw new Error("token সংখ্যা (" + tokens.length + ") ≠ X-এর সারি (" + X.length + ")");
+  const Q = matmul(X, WQ), K = matmul(X, WK), V = matmul(X, WV), dk = K[0].length;
+  const S = matmul(Q, T(K)).map((r) => r.map((v) => v / Math.sqrt(dk)));
+  const Smasked = S.map((r, i) => r.map((v, j) => (causal && j > i ? -Infinity : v)));
+  const A = Smasked.map(softmaxRow);
+  return { Q, K, V, S, Smasked, A, Y: matmul(A, V), tokens, causal };
+}
+function report(r) {
+  console.log("shape: X " + r.tokens.length + "×" + r.Q.length + " → Q " + shape(r.Q) + ", K " + shape(r.K) + ", V " + shape(r.V) + ", A " + shape(r.A) + ", Y " + shape(r.Y) + (r.causal ? " (causal)" : ""));
+  const w = Math.max(...r.tokens.map((t) => t.length)) + 1;
+  console.log("".padEnd(w) + r.tokens.map((t) => t.padStart(7)).join(""));
+  r.A.forEach((row, i) => console.log(r.tokens[i].padEnd(w) + row.map((v) => String(r3(v)).padStart(7)).join("")));
+  const ch = (v) => (v < 0.05 ? " " : v < 0.2 ? "." : v < 0.4 ? "o" : v < 0.6 ? "O" : "@");
+  console.log("heat map:"); r.A.forEach((row, i) => console.log("  " + r.tokens[i].padEnd(w) + "|" + row.map(ch).join("") + "|"));
+}
+function properties(r) {
+  const res = {};
+  res.rowSum = r.A.every((row) => Math.abs(row.reduce((a, b) => a + b, 0) - 1) < 1e-12);
+  res.maskZero = !r.causal || r.A.every((row, i) => row.every((v, j) => j <= i || v === 0));
+  const big = calc({ ...r.input, WQ: r.input.WQ.map((row) => row.map((v) => v * 1000)) });
+  res.stableBig = big.A.flat().every(isFinite);
+  try { calc({ ...r.input, WK: [[1, 0]] }); res.shapeError = false; } catch (e) { res.shapeError = true; }
+  return res;
+}
+
+// teaching vector: [গয়না, ধাতু, রূপ, বিশেষ্য]
+const tokens = ["গলার", "সোনার", "হার", "সুন্দর"];
+const X = [[0.8, 0, 0, 0.5], [0.3, 1, 0.2, 0], [1, 0.4, 0, 1], [0.2, 0, 1, 0]];
+const WQ = [[1, 0], [0, 1], [0, 0], [1, 0]], WK = [[1, 0], [0, 1], [0.5, 0], [0, 0]], WV = [[1, 0], [0, 1], [0, 1], [0, 0]];
+const input = { tokens, X, WQ, WK, WV, causal: true };
+const r = calc(input); r.input = input;
+report(r);
+const props = properties(r);
+console.log("বৈশিষ্ট্য-পরীক্ষা:", Object.entries(props).map(([k, v]) => k + "=" + (v ? "পাস" : "ফেল")).join(", "));
+const i = tokens.indexOf("হার"), top = r.A[i].indexOf(Math.max(...r.A[i]));
+console.log("“হার” সবচেয়ে বেশি দেখছে:", tokens[top], "(" + r3(r.A[i][top]) + ")");
+`,
+        expect: ['shape: X 4×4 → Q 4×2, K 4×2, V 4×2, A 4×4, Y 4×2 (causal)', 'heat map:', 'বৈশিষ্ট্য-পরীক্ষা: rowSum=পাস, maskZero=পাস, stableBig=পাস, shapeError=পাস', '“হার” সবচেয়ে বেশি দেখছে:'],
+        hints: ['heat map-এর উপরের ডান ত্রিভুজ ফাঁকা কেন?', 'causal: false করে report চালান—“গলার” এখন “হার”-কে দেখতে পারে?', 'softmaxRow থেকে “z.map((v) => Math.exp(v - m))”-এর “- m” মুছে দিন। stableBig কী হয়?', '“হার”-এর query = X[2]·WQ = [1+1, 0.4] = [2, 0.4]। কোন token-এর key এর সাথে সবচেয়ে মেলে?'],
+        test: '__assert(props.rowSum&&props.maskZero&&props.stableBig&&props.shapeError,"all properties"); var nc=calc(Object.assign({},input,{causal:false})); __assert(nc.A[0][3]>0,"non-causal sees future"); var bad=false; try{ calc(Object.assign({},input,{tokens:["a"]})); }catch(e){ bad=true; } __assert(bad,"token count check");',
+      },
+    ],
+    line: ul([
+      '<code>calc</code>: প্রতিটি মধ্যবর্তী ধাপ ফেরত দেয়; শুরুতে token-সংখ্যা যাচাই।',
+      '<code>report</code>: token নামসহ টেবিল ও heat map—সংখ্যা ও চিত্র দুটোই।',
+      '<code>properties</code>: চারটি বৈশিষ্ট্য; stableBig-এ W_Q ১০০০ গুণ করে score বিশাল করা হয়।',
+      '<code>{ ...r.input, WK: [[1, 0]] }</code>: ইচ্ছাকৃত ভুল shape—exception আশা করা হয়।',
+    ]),
+    why: p('বৈশিষ্ট্য-পরীক্ষাগুলো নির্দিষ্ট সংখ্যার ওপর নির্ভর করে না, তাই যেকোনো embedding ও W-তে প্রযোজ্য—একটি “golden output” তুলনার চেয়ে শক্তিশালী। পরীক্ষা অংশে softmax-এর max-বাদ মুছে দেখতে বলা হয়েছে যাতে পরীক্ষাটি সত্যিই বাগ ধরে তা নিজে দেখেন।'),
+    remember: ['প্রতিটি মধ্যবর্তী ধাপ দৃশ্যমান রাখুন', 'বৈশিষ্ট্য-পরীক্ষা > একটি উদাহরণ', 'mask, স্থিতিশীলতা, shape—তিন সাধারণ বাগ', 'attention weight ≠ পূর্ণ ব্যাখ্যা'],
+    skip: ['বহু স্তরের attention rollout', 'gradient-ভিত্তিক attribution'],
+    experiment: p('একটি multi-head সংস্করণ বানান: দুটি ভিন্ন WQ/WK জোড়া দিয়ে calc দুবার চালিয়ে দুই heat map পাশাপাশি দেখান। দুই head কি ভিন্ন token-এ মনোযোগ দেয়?'),
+    mistakes: ['একটি উদাহরণের সঠিক-দেখানো আউটপুটকে প্রমাণ ধরা', 'heat map-এর সারি-কলাম উল্টো পড়া', 'mask-এর পরীক্ষায় “প্রায় ০” গ্রহণ করা', 'attention weight দিয়ে মডেলের সিদ্ধান্ত পুরো ব্যাখ্যা করা'],
+    quiz: [
+      { q: 'heat map-এ সারি ২, কলাম ০-এর মান ০.৭। অর্থ?', a: { a: 'token ০ token ২-কে ০.৭ দেখছে', b: 'token ২ (query) token ০ (key)-কে ০.৭ weight দিচ্ছে', c: 'score ০.৭' }, ok: 'b', why: 'সারি = query, কলাম = key; মানটি softmax-এর পরের weight।' },
+      { q: 'softmax-এ max বাদ না দিলে score ১০০০-এ কী হয়?', a: { a: 'ঠিক থাকে', b: 'e^১০০০ = Infinity, ফলে Infinity/Infinity = NaN', c: '০ হয়' }, ok: 'b', why: 'max বাদ দিলে সর্বোচ্চ ঘাত ০, তাই overflow হয় না।' },
+      { q: 'বৈশিষ্ট্য-পরীক্ষা নির্দিষ্ট আউটপুট তুলনার চেয়ে কেন শক্তিশালী?', a: { a: 'দ্রুত বলে', b: 'যেকোনো ইনপুটে সত্য হতে হবে, তাই অনেক ধরনের বাগ ধরে', c: 'কোনো পার্থক্য নেই' }, ok: 'b', why: 'একটি golden output শুধু ঐ ইনপুট যাচাই করে; বৈশিষ্ট্য সব ইনপুটের জন্য।' },
+    ],
+    recap: ['স্বচ্ছ, পরীক্ষাযোগ্য attention', 'চারটি বৈশিষ্ট্য যাচাই', 'weight পড়া ও তার সীমা'],
+    nextNote: 'মডেল এখন পরের token-এর বণ্টন দেয়। সেই বণ্টন থেকে কীভাবে টেক্সট বানানো হয়—sampling:',
+    sources: [SRC.attention, ['Jain & Wallace — Attention is not Explanation (NAACL 2019)', 'https://aclanthology.org/N19-1357/'], ['Wiegreffe & Pinter — Attention is not not Explanation (EMNLP 2019)', 'https://aclanthology.org/D19-1002/']],
+  },
+];
+
+export default { chapter, lessons };

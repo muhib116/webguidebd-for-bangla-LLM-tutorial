@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0.0",
+  "course": {
+    "stable_id": "course-ai-llm-bengali-v1",
+    "slug": "ai-llm-academy",
+    "title_bn": "WebGuideBD AI Academy — AI ও LLM কোর্স",
+    "summary_bn": "বাংলায় practical AI engineering: JavaScript দিয়ে ভিত্তি, পরে Python ও PyTorch ব্রিজ। বিনামূল্যে।",
+    "author": "Muhibbullah Ansary",
+    "language": "bn",
+    "price": "free"
+  },
+  "public_preview_chapter_ids": [
+    "ch-01-ai-llm-intro",
+    "ch-02-js-fundamentals"
+  ],
+  "chapters": [
+    {
+      "stable_id": "ch-01-ai-llm-intro",
+      "slug": "ai-o-llm-porichiti",
+      "title_bn": "AI ও LLM পরিচিতি",
+      "order": 1,
+      "access": "public",
+      "summary_bn": "AI, ML, DL ও LLM-এর সম্পর্ক, training/inference, সক্ষমতা-সীমা এবং শেখার পথ।",
+      "lessons": [
+        "les-01-01-what-is-ai",
+        "les-01-02-ml-dl-llm",
+        "les-01-03-train-vs-inference",
+        "les-01-04-models-params-data",
+        "les-01-05-capabilities-limits",
+        "les-01-06-engineer-vs-researcher",
+        "les-01-07-learning-roadmap",
+        "les-01-08-rule-vs-examples"
+      ]
+    },
+    {
+      "stable_id": "ch-02-js-fundamentals",
+      "slug": "ai-shekhar-javascript",
+      "title_bn": "AI শেখার জন্য প্রয়োজনীয় JavaScript",
+      "order": 2,
+      "access": "public",
+      "summary_bn": "Variables থেকে async/await—AI অনুশীলনের জন্য প্রয়োজনীয় JavaScript ভিত্তি ও একটি rule-based প্রজেক্ট।",
+      "lessons": [
+        "les-02-01-values-types",
+        "les-02-02-arrays-objects",
+        "les-02-03-functions-conditions",
+        "les-02-04-loops-modules",
+        "les-02-05-json-async",
+        "les-02-06-debugging",
+        "les-02-07-project-support-bot"
+      ]
+    },
+    {
+      "stable_id": "ch-03-math-foundations",
+      "slug": "goniter-vitti",
+      "title_bn": "গণিতের ভিত্তি",
+      "order": 3,
+      "access": "login",
+      "summary_bn": "ভেক্টর, ম্যাট্রিক্স, সম্ভাব্যতা, গ্রেডিয়েন্ট—ছোট সংখ্যায় হাতেকলমে।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-04-ml-foundations",
+      "slug": "machine-learning-vitti",
+      "title_bn": "Machine Learning-এর ভিত্তি",
+      "order": 4,
+      "access": "login",
+      "summary_bn": "Feature/label, split, loss, overfitting, মূল্যায়ন মেট্রিক।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-05-neural-networks",
+      "slug": "neural-network",
+      "title_bn": "Neural Network ভেতরে কীভাবে কাজ করে",
+      "order": 5,
+      "access": "login",
+      "summary_bn": "Forward/backprop, batch, epoch, অপটিমাইজার—JavaScript-এ ছোট নেটওয়ার্ক।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-06-text-tokens-lm",
+      "slug": "text-token-language-modeling",
+      "title_bn": "Text, Token ও Language Modeling",
+      "order": 6,
+      "access": "login",
+      "summary_bn": "টোকেনাইজেশন, vocabulary, next-token prediction—বাংলা ও ইংরেজি উদাহরণ।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-07-embeddings-search",
+      "slug": "embedding-semantic-search",
+      "title_bn": "Embedding ও Semantic Search",
+      "order": 7,
+      "access": "login",
+      "summary_bn": "Embedding, cosine similarity, বাংলা প্রোডাক্ট সার্চ ডেমো।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-08-attention-transformer",
+      "slug": "attention-transformer",
+      "title_bn": "Attention ও Transformer",
+      "order": 8,
+      "access": "login",
+      "summary_bn": "Q/K/V, scaled attention, masking, multi-head—ক্যালকুলেটর প্রজেক্ট।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-09-llm-training-gen",
+      "slug": "llm-training-generation",
+      "title_bn": "LLM Training ও Text Generation",
+      "order": 9,
+      "access": "login",
+      "summary_bn": "Pretraining, SFT, decoding, temperature/top-p, hallucination।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-10-llm-app-eng",
+      "slug": "llm-application-engineering",
+      "title_bn": "LLM Application Engineering",
+      "order": 10,
+      "access": "login",
+      "summary_bn": "API roles, structured output, streaming, retries, tool calling—লোকাল প্র্যাকটিস মোড।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-11-rag",
+      "slug": "retrieval-augmented-generation",
+      "title_bn": "Retrieval-Augmented Generation",
+      "order": 11,
+      "access": "login",
+      "summary_bn": "Chunking, hybrid search, citations, অ্যাক্সেস কন্ট্রোল।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-12-workflow-agents-eval",
+      "slug": "workflow-agent-evaluation",
+      "title_bn": "Workflow, Agent ও Evaluation",
+      "order": 12,
+      "access": "login",
+      "summary_bn": "Deterministic workflow বনাম agent, prompt injection, মূল্যায়ন।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-13-js-python-pytorch",
+      "slug": "javascript-python-pytorch",
+      "title_bn": "JavaScript থেকে Python ও PyTorch",
+      "order": 13,
+      "access": "login",
+      "summary_bn": "সিনট্যাক্স ম্যাপিং, NumPy/PyTorch, ছোট language model।",
+      "lessons": [],
+      "publication_state": "planned"
+    },
+    {
+      "stable_id": "ch-14-capstone",
+      "slug": "engineering-research-capstone",
+      "title_bn": "Engineering ও Research Capstone",
+      "order": 14,
+      "access": "login",
+      "summary_bn": "প্রোডাকশন ট্র্যাক ও গবেষণা ট্র্যাক—দুইটি ক্যাপস্টোন।",
+      "lessons": [],
+      "publication_state": "planned"
+    }
+  ]
+}
