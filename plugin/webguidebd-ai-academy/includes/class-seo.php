@@ -41,7 +41,10 @@ final class SEO {
 	 * @param string $output Language attributes.
 	 */
 	public static function language_attributes( string $output ): string {
-		if ( ! get_query_var( 'wgba_route' ) ) {
+		$route = (string) get_query_var( 'wgba_route' );
+		$on_academy = '' !== $route
+			|| ( ( is_front_page() || is_home() ) && Rewrite::serve_as_front_page() );
+		if ( ! $on_academy ) {
 			return $output;
 		}
 		$dir = ( false !== stripos( $output, 'dir="rtl"' ) ) ? 'rtl' : 'ltr';

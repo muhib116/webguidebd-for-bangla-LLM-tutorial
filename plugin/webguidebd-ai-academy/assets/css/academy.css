@@ -341,8 +341,37 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
   font-weight: 600;
   white-space: nowrap;
 }
-.wgba-theme-ico { font-size: 14px; line-height: 1; }
+.wgba-theme-ico {
+  display: none;
+  width: 16px;
+  height: 16px;
+  line-height: 0;
+  flex: 0 0 auto;
+}
+.wgba-theme-ico svg { display: block; }
+/* Label shows the mode you can switch TO — show that mode's icon. */
+[data-wgba-theme="light"] .wgba-theme-ico-moon { display: block; }
+[data-wgba-theme="dark"] .wgba-theme-ico-sun { display: block; }
 .wgba-theme-suffix { font-weight: 500; opacity: 0.85; }
+
+.wgba-account-login {
+  background: var(--wgba-green) !important;
+  color: #fff !important;
+  justify-content: center;
+}
+.wgba-account-login:hover {
+  background: var(--wgba-green-hover) !important;
+  color: #fff !important;
+}
+[data-wgba-theme="dark"] .wgba-account-login {
+  color: #fff !important;
+}
+
+.wgba-gear:focus-visible,
+.wgba-account-item:focus-visible {
+  outline: 3px solid #ffc107;
+  outline-offset: 2px;
+}
 
 .wgba-top-inner { position: relative; }
 
@@ -377,8 +406,12 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   box-sizing: border-box;
+  mask-image: linear-gradient(90deg, #000 0%, #000 calc(100% - 28px), transparent 100%);
 }
 .wgba-subnav-inner::-webkit-scrollbar { display: none; }
+.wgba-subnav-inner.is-at-end {
+  mask-image: none;
+}
 
 .wgba-subnav a {
   flex: 0 0 auto;
@@ -395,11 +428,16 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
   background: var(--wgba-green);
   color: #fff !important;
 }
+.wgba-subnav a:focus-visible {
+  outline: 2px solid #ffc107;
+  outline-offset: 2px;
+}
 
 @media (max-width: 900px) {
-  .wgba-top-inner { flex-wrap: nowrap; }
+  .wgba-top-inner { flex-wrap: nowrap; gap: 10px; padding: 0 12px; }
   .wgba-account { margin-left: 0; }
-  .wgba-nav-meta a { padding: 7px 8px; font-size: 14px; }
+  .wgba-nav-meta { gap: 0; }
+  .wgba-nav-meta a { padding: 7px 8px; font-size: 13px; }
   .wgba-top .wgba-brand img.wgba-brand-logo {
     height: 36px !important;
     max-height: 36px !important;
@@ -407,6 +445,11 @@ body.wgba-body header.wgba-top a.wgba-brand > img,
   }
   .wgba-subnav-inner { padding: 0 10px; }
   .wgba-subnav a { padding: 8px 12px; font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+  .wgba-nav-meta a { padding: 6px 6px; font-size: 12px; }
+  .wgba-gear { width: 36px; height: 36px; }
 }
 
 /* —— Buttons (W3 green) —— */

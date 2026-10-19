@@ -1,6 +1,6 @@
 <?php
 /**
- * Academy chrome — top meta bar + topic subnav (logo = home).
+ * Academy chrome — calm top meta bar + topic subnav (logo = home).
  *
  * @package WebGuideBD\AIAcademy
  */
@@ -69,12 +69,9 @@ $logged_in   = is_user_logged_in();
 			<span class="wgba-sr-only">WebGuideBD AI Academy</span>
 		</a>
 		<nav class="wgba-nav wgba-nav-meta" aria-label="সাইট মেনু">
-			<a class="<?php echo $is_author ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'author' ) ); ?>">About Us</a>
-			<a class="<?php echo $is_contact ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'contact' ) ); ?>">Contact Us</a>
+			<a class="<?php echo $is_author ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'author' ) ); ?>">আমাদের সম্পর্কে</a>
+			<a class="<?php echo $is_contact ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'contact' ) ); ?>">যোগাযোগ</a>
 		</nav>
-		<?php if ( ! $logged_in ) : ?>
-			<a class="wgba-btn-login" href="<?php echo esc_url( \WGBA\Rewrite::url( 'login' ) ); ?>">লগইন</a>
-		<?php endif; ?>
 		<div class="wgba-account" data-wgba-account>
 			<button
 				type="button"
@@ -101,8 +98,14 @@ $logged_in   = is_user_logged_in();
 						<input type="hidden" name="wgba_auth_action" value="logout">
 						<button type="submit" class="wgba-account-item" role="menuitem">লগআউট</button>
 					</form>
-					<div class="wgba-account-sep" role="separator"></div>
+				<?php else : ?>
+					<a
+						role="menuitem"
+						class="wgba-account-item wgba-account-login"
+						href="<?php echo esc_url( \WGBA\Rewrite::url( 'login' ) ); ?>"
+					>লগইন</a>
 				<?php endif; ?>
+				<div class="wgba-account-sep" role="separator"></div>
 				<button
 					type="button"
 					class="wgba-account-item wgba-theme-toggle"
@@ -110,7 +113,12 @@ $logged_in   = is_user_logged_in();
 					data-wgba-theme-toggle
 					aria-label="থিম বদলান"
 				>
-					<span class="wgba-theme-ico" aria-hidden="true">◐</span>
+					<span class="wgba-theme-ico wgba-theme-ico-sun" aria-hidden="true">
+						<svg width="16" height="16" viewBox="0 0 24 24" focusable="false"><path fill="currentColor" d="M12 4.5a1 1 0 0 1 1 1V7a1 1 0 1 1-2 0V5.5a1 1 0 0 1 1-1zm0 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM5.5 11a1 1 0 0 1 1-1H8a1 1 0 1 1 0 2H6.5a1 1 0 0 1-1-1zm10.5 0a1 1 0 0 1 1-1H18a1 1 0 1 1 0 2h-1.5a1 1 0 0 1-1-1zM7.05 7.05a1 1 0 0 1 1.41 0L9.5 8.09A1 1 0 1 1 8.09 9.5L7.05 8.46a1 1 0 0 1 0-1.41zm7.45 7.45a1 1 0 0 1 1.41 0l1.04 1.04a1 1 0 0 1-1.41 1.41l-1.04-1.04a1 1 0 0 1 0-1.41zM12 16a1 1 0 0 1 1 1v1.5a1 1 0 1 1-2 0V17a1 1 0 0 1 1-1zm5.54-8.95a1 1 0 0 1 0 1.41L16.5 9.5A1 1 0 1 1 15.09 8.09l1.04-1.04a1 1 0 0 1 1.41 0zM8.09 15.09a1 1 0 0 1 0 1.41L7.05 17.54a1 1 0 0 1-1.41-1.41l1.04-1.04a1 1 0 0 1 1.41 0z"/></svg>
+					</span>
+					<span class="wgba-theme-ico wgba-theme-ico-moon" aria-hidden="true">
+						<svg width="16" height="16" viewBox="0 0 24 24" focusable="false"><path fill="currentColor" d="M12.1 2a1 1 0 0 1 .9 1.45A7.5 7.5 0 1 0 20.55 11a1 1 0 0 1 1.9-.3A9.5 9.5 0 1 1 12.1 2z"/></svg>
+					</span>
 					<span data-wgba-theme-label>ডার্ক</span>
 					<span class="wgba-theme-suffix"> থিম</span>
 				</button>
@@ -118,7 +126,7 @@ $logged_in   = is_user_logged_in();
 		</div>
 	</div>
 </header>
-<nav class="wgba-subnav" aria-label="পাঠ্যক্রম মেনু">
+<nav class="wgba-subnav" data-wgba-subnav aria-label="পাঠ্যক্রম মেনু">
 	<div class="wgba-subnav-inner">
 		<a class="<?php echo $is_roadmap ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'roadmap' ) ); ?>">রোডম্যাপ</a>
 		<a class="<?php echo $ch_ai ? 'is-active' : ''; ?>" href="<?php echo esc_url( \WGBA\Rewrite::url( 'chapter', 'ai-o-llm-porichiti' ) ); ?>">AI ও LLM</a>

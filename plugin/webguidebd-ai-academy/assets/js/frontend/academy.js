@@ -80,6 +80,18 @@
     });
   })();
 
+  (function setupSubnavFade() {
+    var inner = document.querySelector('.wgba-subnav-inner');
+    if (!inner) return;
+    function sync() {
+      var max = inner.scrollWidth - inner.clientWidth - 2;
+      inner.classList.toggle('is-at-end', max <= 0 || inner.scrollLeft >= max);
+    }
+    inner.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  })();
+
   document.querySelectorAll('[data-wgba-sidebar-toggle]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var side = btn.closest('.wgba-sidebar');
