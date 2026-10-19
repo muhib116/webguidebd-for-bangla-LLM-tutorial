@@ -23,7 +23,9 @@ final class Assets {
 	 * Academy routes use standalone chrome — drop theme/Elementor CSS that overrides links.
 	 */
 	public static function strip_theme_assets(): void {
-		if ( ! get_query_var( 'wgba_route' ) ) {
+		$route = (string) get_query_var( 'wgba_route' );
+		$on_front = ( is_front_page() || is_home() ) && Rewrite::serve_as_front_page();
+		if ( '' === $route && ! $on_front ) {
 			return;
 		}
 
@@ -45,7 +47,9 @@ final class Assets {
 	 * Keep only academy front scripts on academy routes.
 	 */
 	public static function strip_theme_scripts(): void {
-		if ( ! get_query_var( 'wgba_route' ) ) {
+		$route = (string) get_query_var( 'wgba_route' );
+		$on_front = ( is_front_page() || is_home() ) && Rewrite::serve_as_front_page();
+		if ( '' === $route && ! $on_front ) {
 			return;
 		}
 
@@ -72,7 +76,9 @@ final class Assets {
 	}
 
 	public static function maybe_enqueue(): void {
-		if ( ! get_query_var( 'wgba_route' ) ) {
+		$route = (string) get_query_var( 'wgba_route' );
+		$on_front = ( is_front_page() || is_home() ) && Rewrite::serve_as_front_page();
+		if ( '' === $route && ! $on_front ) {
 			return;
 		}
 
@@ -117,9 +123,8 @@ final class Assets {
 			true
 		);
 
-		wp_localize_script(
-			'wgba-frontend',
-			'wgbaData',
+		$localize = apply_filters(
+			'wgba_localize_frontend',
 			array(
 				'restUrl'  => esc_url_raw( rest_url( REST_API::NS . '/' ) ),
 				'nonce'    => wp_create_nonce( 'wp_rest' ),
@@ -136,8 +141,12 @@ final class Assets {
 				'loginUrl' => Rewrite::url( 'login' ),
 			)
 		);
+		wp_localize_script( 'wgba-frontend', 'wgbaData', $localize );
 
 		$route = get_query_var( 'wgba_route' );
+		if ( '' === $route && $on_front ) {
+			$route = 'home';
+		}
 		if ( in_array( $route, array( 'lesson', 'home' ), true ) ) {
 			wp_enqueue_script(
 				'wgba-playground-host',

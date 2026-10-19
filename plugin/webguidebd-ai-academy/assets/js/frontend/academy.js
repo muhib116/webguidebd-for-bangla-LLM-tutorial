@@ -226,4 +226,31 @@
   });
 
   document.dispatchEvent(new CustomEvent('wgba:ready'));
+
+  // Progressive Web App — register SW when served over HTTPS / localhost.
+  (function registerPwa() {
+    if (!('serviceWorker' in navigator)) return;
+    var cfg = window.wgbaData && wgbaData.pwa;
+    if (!cfg || !cfg.enabled || !cfg.swUrl) return;
+    var secure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!secure) return;
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register(cfg.swUrl, { scope: cfg.scope || '/' })
+        .then(function (reg) {
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'WGBA_SKIP_WAITING' });
+          }
+          reg.addEventListener('updatefound', function () {
+            var worker = reg.installing;
+            if (!worker) return;
+            worker.addEventListener('statechange', function () {
+              if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                worker.postMessage({ type: 'WGBA_SKIP_WAITING' });
+              }
+            });
+          });
+        })
+        .catch(function () { /* install optional */ });
+    });
+  })();
 })();

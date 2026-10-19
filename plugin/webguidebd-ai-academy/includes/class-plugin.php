@@ -37,6 +37,7 @@ final class Plugin {
 		Auth_Frontend::register();
 		Templates::register();
 		SEO::register();
+		PWA::register();
 		Privacy::register();
 		Admin::register();
 		Ads::register();

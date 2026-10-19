@@ -102,9 +102,14 @@ final class Rewrite {
 		add_rewrite_rule( "^{$base}/editorial/?$", 'index.php?wgba_route=editorial', 'top' );
 		add_rewrite_rule( "^{$base}/sitemap\.xml$", 'index.php?wgba_route=sitemap', 'top' );
 		add_rewrite_rule( "^{$base}/llms\.txt$", 'index.php?wgba_route=llms', 'top' );
-		// Site-root discovery (search engines + LLM agents).
+		add_rewrite_rule( "^{$base}/offline/?$", 'index.php?wgba_route=offline', 'top' );
+		add_rewrite_rule( "^{$base}/manifest\.webmanifest$", 'index.php?wgba_route=manifest', 'top' );
+		add_rewrite_rule( "^{$base}/sw\.js$", 'index.php?wgba_route=sw', 'top' );
+		// Site-root discovery (search engines + LLM agents + PWA).
 		add_rewrite_rule( '^sitemap\.xml$', 'index.php?wgba_route=sitemap', 'top' );
 		add_rewrite_rule( '^llms\.txt$', 'index.php?wgba_route=llms', 'top' );
+		add_rewrite_rule( '^manifest\.webmanifest$', 'index.php?wgba_route=manifest', 'top' );
+		add_rewrite_rule( '^sw\.js$', 'index.php?wgba_route=sw', 'top' );
 	}
 
 	/**
